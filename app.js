@@ -412,55 +412,108 @@ function enviarWhatsapp() {
 }
 
 // --- 8. ÁREA ADMIN (DASHBOARD) ---
+// --- ATUALIZE ESTA FUNÇÃO NO SEU APP.JS ---
 async function carregarAdmin() {
     mostrarAbaAdmin('dashboard');
     showLoading();
     try {
+        // Traz os agendamentos ordenados (Backend deve ordenar por data, mas garantimos aqui se precisar)
         const res = await fetchAdmin('/agendamentos/admin/todos');
-        const agendamentos = await res.json();
+        let agendamentos = await res.json();
 
-        const total = agendamentos.reduce((acc, item) => acc + (item.valorCobrado || 0), 0);
+        // Ordenar: Mais recentes primeiro
+        agendamentos.sort((a, b) => new Date(b.dataHoraInicio) - new Date(a.dataHoraInicio));
+
+        // Totais (Considera Confirmados e Concluídos como receita prevista/real)
+        const validos = agendamentos.filter(a => a.status === 'CONCLUIDO' || a.status === 'CONFIRMADO');
+        const total = validos.reduce((acc, item) => acc + (item.valorCobrado || 0), 0);
+
         document.getElementById('admin-count').innerText = agendamentos.length;
         document.getElementById('admin-revenue').innerText = formatarMoeda(total);
 
         const lista = document.getElementById('admin-list');
         lista.innerHTML = '';
+
         if(agendamentos.length === 0) {
             lista.innerHTML = renderEmptyState('Nenhum agendamento encontrado.');
         } else {
             agendamentos.forEach(a => {
-              let classeCor = 'badge-agendado';
-              if(a.status === 'CONCLUIDO') classeCor = 'badge-concluido';
-              if(a.status === 'CANCELADO') classeCor = 'badge-cancelado';
+                // 1. Definição de Cores e Texto
+                let classeCor = 'badge-agendado';
+                let textoStatus = a.status;
 
-              const div = document.createElement('div');
-              div.className = 'admin-card-item';
-              div.innerHTML = `
-                <div>
-                    <span class="badge ${classeCor}">${a.status || 'AGENDADO'}</span>
-                    <div style="font-weight:600; margin-top:4px;">${formatarData(a.dataHoraInicio)}</div>
-                    <div style="font-size:12px; color:var(--text-sec);">${a.cliente ? a.cliente.nome : 'Cliente'} com ${a.barbeiro ? a.barbeiro.nome : 'Barbeiro'}</div>
+                if(a.status === 'CONFIRMADO') classeCor = 'badge-confirmado';
+                if(a.status === 'CONCLUIDO') classeCor = 'badge-concluido';
+                if(a.status && a.status.includes('CANCELADO')) {
+                    classeCor = 'badge-cancelado';
+                    textoStatus = a.status.replace(/_/g, ' '); // Tira os underlines
+                }
+
+                // 2. Lógica dos Botões (O que aparece em cada fase?)
+                let botoesHtml = '';
+
+                // Se está AGENDADO -> Pode Confirmar ou Cancelar
+                if(a.status === 'AGENDADO') {
+                    botoesHtml = `
+                        <button class="btn-mini btn-confirm" onclick="confirmarAdmin(${a.id})">
+                            <span class="material-icons-round" style="font-size:14px">thumb_up</span> Confirmar
+                        </button>
+                        <button class="btn-mini btn-cancel" onclick="cancelarAdmin(${a.id})">
+                            <span class="material-icons-round" style="font-size:14px">block</span> Cancelar
+                        </button>
+                    `;
+                }
+
+                // Se está CONFIRMADO -> Pode Concluir (Finalizar e Pagar) ou Cancelar
+                else if(a.status === 'CONFIRMADO') {
+                    botoesHtml = `
+                        <button class="btn-mini btn-done" onclick="concluirAdmin(${a.id})">
+                            <span class="material-icons-round" style="font-size:14px">check_circle</span> Concluir
+                        </button>
+                        <button class="btn-mini btn-cancel" onclick="cancelarAdmin(${a.id})">
+                            <span class="material-icons-round" style="font-size:14px">block</span> Cancelar
+                        </button>
+                    `;
+                }
+
+                // 3. Monta o Card
+                const div = document.createElement('div');
+                div.className = 'admin-card-item';
+                div.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <div>
+                        <span class="badge ${classeCor}" style="font-size:9px;">${textoStatus}</span>
+                        <div style="font-weight:600; margin-top:4px; font-size:15px;">${formatarData(a.dataHoraInicio)}</div>
+                        <div style="font-size:12px; color:var(--text-sec); margin-top:2px;">
+                            <span style="color:#111827; font-weight:500;">${a.cliente ? a.cliente.nome : 'Cliente'}</span>
+                            <span style="margin:0 4px;">•</span>
+                            ${a.barbeiro ? a.barbeiro.nome.split(' ')[0] : 'Barbeiro'}
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-weight:700; color:var(--text-main); font-size:15px;">${formatarMoeda(a.valorCobrado)}</div>
+                        <div style="font-size:11px; color:var(--text-sec);">${a.servico ? a.servico.nome : 'Serviço'}</div>
+                    </div>
                 </div>
-                <div style="text-align:right">
-                    <div style="font-weight:700; color:var(--text-main);">${formatarMoeda(a.valorCobrado)}</div>
-                    <div style="font-size:11px; color:var(--text-sec);">${a.servico ? a.servico.nome : 'Serviço'}</div>
-                </div>`;
-              lista.appendChild(div);
+
+                ${botoesHtml ? `<div class="actions-row">${botoesHtml}</div>` : ''}
+                `;
+                lista.appendChild(div);
             });
         }
 
-        // Gráfico (Chart.js)
+        // Atualiza Gráfico (Mantém igual)
         const ctx = document.getElementById('myChart');
         if(ctx) {
              const contador = {};
              agendamentos.forEach(a => {
-                 const n = a.servico ? a.servico.nome : 'Outros';
-                 contador[n] = (contador[n] || 0) + 1;
+                 // Conta apenas os não cancelados para o gráfico de popularidade
+                 if(!a.status.includes('CANCELADO')) {
+                     const n = a.servico ? a.servico.nome : 'Outros';
+                     contador[n] = (contador[n] || 0) + 1;
+                 }
              });
-             // Verifica se existe window.myAdminChart (se já foi criado, destroi)
              if(window.myAdminChart instanceof Chart) window.myAdminChart.destroy();
-
-             // Cria novo gráfico
              window.myAdminChart = new Chart(ctx, {
                  type: 'doughnut',
                  data: {
@@ -647,5 +700,71 @@ async function cancelarAgendamento(id) {
         }
     } else {
         abrirMeusAgendamentos();
+    }
+
+    // --- AÇÕES DO ADMIN (BOTOES) ---
+
+    async function confirmarAdmin(id) {
+        showLoading();
+        try {
+            const res = await fetchAdmin(`/agendamentos/${id}/confirmar`, { method: 'PUT' });
+            if(res.ok) {
+                const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000});
+                Toast.fire({icon: 'success', title: 'Agendamento Confirmado!'});
+                carregarAdmin(); // Recarrega a lista
+            } else {
+                Swal.fire('Erro', 'Não foi possível confirmar.', 'error');
+            }
+        } catch(e) { Swal.fire('Erro', 'Falha na conexão.', 'error'); }
+        finally { hideLoading(); }
+    }
+
+    async function concluirAdmin(id) {
+        const result = await Swal.fire({
+            title: 'Finalizar Serviço?',
+            text: "Confirmar que o serviço foi feito e pago?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#059669',
+            confirmButtonText: 'Sim, Concluir'
+        });
+
+        if(result.isConfirmed) {
+            showLoading();
+            try {
+                const res = await fetchAdmin(`/agendamentos/${id}/concluir`, { method: 'PUT' });
+                if(res.ok) {
+                    Swal.fire('Sucesso', 'Serviço concluído e faturado!', 'success');
+                    carregarAdmin();
+                } else {
+                    Swal.fire('Erro', 'Erro ao concluir.', 'error');
+                }
+            } catch(e) {}
+            finally { hideLoading(); }
+        }
+    }
+
+    async function cancelarAdmin(id) {
+        const result = await Swal.fire({
+            title: 'Cancelar?',
+            text: "Isso vai liberar o horário na agenda.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            confirmButtonText: 'Sim, Cancelar'
+        });
+
+        if(result.isConfirmed) {
+            showLoading();
+            try {
+                // Usa o endpoint específico do barbeiro
+                const res = await fetchAdmin(`/agendamentos/${id}/barbeiro`, { method: 'DELETE' });
+                if(res.ok) {
+                    Swal.fire('Cancelado', 'Agendamento cancelado com sucesso.', 'success');
+                    carregarAdmin();
+                }
+            } catch(e) {}
+            finally { hideLoading(); }
+        }
     }
 }
