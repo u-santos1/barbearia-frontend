@@ -1,6 +1,6 @@
 
-// 1. A URL do seu Backend no Railway (SEM a barra no final)
-const API_URL = "https://barbearia-backend-production.up.railway.app";
+// O link campeão que funcionou no Postman:
+const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
 
 // 2. Seus dados de login (Aqueles que configuramos no Railway)
 const USUARIO = "admin";
