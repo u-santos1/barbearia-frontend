@@ -1,0 +1,20 @@
+{
+  "name": "Barbearia SaaS",
+  "short_name": "Barbearia",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F9FAFB",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/147/147142.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/147/147142.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

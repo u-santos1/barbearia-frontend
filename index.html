@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4F46E5">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Barbearia SaaS</title>
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+  <div style="width: 40px; height: 40px; border: 4px solid #E5E7EB; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+  <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+</div>
+
+<div id="app">
+
+  <div id="screen-login" class="screen active">
+
+    <div style="text-align: center; margin-top: 60px; margin-bottom: 50px;">
+      <div style="width: 80px; height: 80px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+        <span class="material-icons-round" style="font-size: 40px; color: var(--primary);">content_cut</span>
+      </div>
+      <h1>Barbearia App</h1>
+      <p>Gerencie seu estilo</p>
+    </div>
+
+    <div class="input-group">
+      <label>ID de Acesso</label>
+      <input type="text" id="loginId" placeholder="Seu ID ou 'admin'">
+    </div>
+
+    <div style="text-align: right; margin-bottom: 24px;">
+      <a href="#" onclick="recuperarId()" style="color: var(--text-sec); font-size: 13px; font-weight: 500; text-decoration: none;">
+        Esqueceu o ID?
+      </a>
+    </div>
+
+    <button class="btn-primary" onclick="fazerLogin()">
+      Entrar <span class="material-icons-round" style="font-size: 18px;">arrow_forward</span>
+    </button>
+
+    <button class="btn-secondary" onclick="navegarPara('screen-register')">
+      Criar nova conta
+    </button>
+
+  </div>
+
+  <div id="screen-register" class="screen">
+    <button class="btn-outline" style="width: auto; padding: 8px 16px; border-radius: 8px; border-style: solid; margin-bottom: 30px;" onclick="navegarPara('screen-login')">
+      <span class="material-icons-round" style="font-size: 18px;">arrow_back</span> Voltar
+    </button>
+
+    <h1>Criar Conta</h1>
+    <p>Preencha seus dados para começar.</p>
+
+    <div class="input-group">
+      <label>Nome Completo</label>
+      <input type="text" id="regNome" placeholder="Ex: João Silva">
+    </div>
+    <div class="input-group">
+      <label>E-mail</label>
+      <input type="email" id="regEmail" placeholder="seu@email.com">
+    </div>
+    <div class="input-group">
+      <label>Celular</label>
+      <input type="text" id="regTelefone" placeholder="(00) 00000-0000">
+    </div>
+
+    <button class="btn-primary" style="margin-top: 20px;" onclick="cadastrarCliente()">
+      Confirmar Cadastro
+    </button>
+  </div>
+
+  <div id="screen-booking" class="screen">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div>
+        <h1 style="font-size: 20px; margin: 0;">Novo Agendamento</h1>
+        <p style="margin: 0; font-size: 13px;">Olá, <span id="user-name-display" style="color: var(--primary); font-weight: 600;">Cliente</span></p>
+      </div>
+      <button onclick="logout()" style="border: none; background: #FEE2E2; color: #991B1B; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        <span class="material-icons-round" style="font-size: 20px;">logout</span>
+      </button>
+    </div>
+
+    <div onclick="abrirMeusAgendamentos()" class="action-card">
+      <div class="icon-box">
+        <span class="material-icons-round" style="font-size: 24px;">event_note</span>
+      </div>
+      <div style="flex: 1;">
+        <strong>Meus Agendamentos</strong>
+        <p>Ver histórico ou cancelar horários</p>
+      </div>
+      <span class="material-icons-round" style="color: #D1D5DB;">chevron_right</span>
+    </div>
+
+    <div id="booking-error" class="error-msg"></div>
+
+    <h2>1. Profissional</h2>
+    <div class="barber-list" id="list-barbers">
+      <p style="font-size: 13px; color: var(--text-sec); width: 100%; text-align: center;">Carregando...</p>
+    </div>
+
+    <h2>2. Serviço</h2>
+    <div id="list-services">
+      <p style="font-size: 13px; color: var(--text-sec); padding: 10px; background: var(--bg); border-radius: 8px; text-align: center;">Selecione um profissional acima.</p>
+    </div>
+
+    <h2>3. Data</h2>
+    <div class="input-group">
+      <input type="date" id="date-picker">
+    </div>
+
+    <h2>4. Horário</h2>
+    <div class="time-grid" id="grid-times">
+      <div style="grid-column: span 4; padding: 20px; text-align: center; color: var(--text-sec); background: var(--bg); border-radius: 12px; border: 1px dashed var(--border);">
+        Selecione uma data para ver horários
+      </div>
+    </div>
+
+  </div>
+
+  <div id="screen-admin" class="screen">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <h1 style="color: var(--text-main); margin:0;">Painel Admin</h1>
+      <button onclick="logout()" class="btn-outline" style="width: auto; padding: 8px 12px; font-size: 12px; margin: 0; color: #EF4444; border-color: #FECACA;">
+        Sair
+      </button>
+    </div>
+
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="mostrarAbaAdmin('dashboard'); atualizarAbaAtiva(this)">Visão Geral</button>
+      <button class="tab-btn" onclick="mostrarAbaAdmin('equipe'); atualizarAbaAtiva(this)">Equipe</button>
+      <button class="tab-btn" onclick="mostrarAbaAdmin('servicos'); atualizarAbaAtiva(this)">Serviços</button>
+    </div>
+
+    <div id="tab-dashboard">
+      <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+        <div style="flex: 1; background: var(--primary-light); padding: 20px; border-radius: var(--radius); border: 1px solid rgba(79, 70, 229, 0.1);">
+          <label style="color: var(--primary); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Agendamentos</label>
+          <div style="font-size: 28px; font-weight: 800; color: var(--text-main); margin-top: 5px;" id="admin-count">0</div>
+        </div>
+        <div style="flex: 1; background: #ECFDF5; padding: 20px; border-radius: var(--radius); border: 1px solid #A7F3D0;">
+          <label style="color: #059669; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Faturamento</label>
+          <div style="font-size: 28px; font-weight: 800; color: #064E3B; margin-top: 5px;" id="admin-revenue">R$ 0</div>
+        </div>
+      </div>
+
+      <div style="background: var(--surface); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; position: relative; height: 220px; box-shadow: var(--shadow-sm);">
+        <canvas id="myChart"></canvas>
+      </div>
+
+      <h2>Próximos Agendamentos</h2>
+      <div id="admin-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    </div>
+
+    <div id="tab-equipe" style="display: none;">
+      <div style="background: var(--primary-light); padding: 20px; border-radius: var(--radius); margin-bottom: 24px; border: 1px dashed var(--primary);">
+        <h2 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);">+ Novo Profissional</h2>
+        <input type="text" id="newBarbNome" placeholder="Nome" style="margin-bottom: 10px;">
+        <input type="email" id="newBarbEmail" placeholder="Email" style="margin-bottom: 10px;">
+        <input type="text" id="newBarbEsp" placeholder="Especialidade" style="margin-bottom: 10px;">
+        <button class="btn-primary" style="padding: 10px;" onclick="addBarbeiro()">Adicionar</button>
+      </div>
+      <h2>Equipe Cadastrada</h2>
+      <div id="admin-barbers-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    </div>
+
+    <div id="tab-servicos" style="display: none;">
+      <div style="background: var(--primary-light); padding: 20px; border-radius: var(--radius); margin-bottom: 24px; border: 1px dashed var(--primary);">
+        <h2 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);">+ Novo Serviço</h2>
+        <input type="text" id="newServNome" placeholder="Nome do Serviço" style="margin-bottom: 10px;">
+        <input type="number" id="newServPreco" placeholder="Preço (R$)" style="margin-bottom: 10px;">
+        <input type="number" id="newServTempo" placeholder="Duração (minutos)" style="margin-bottom: 10px;">
+        <button class="btn-primary" style="padding: 10px;" onclick="addServico()">Adicionar</button>
+      </div>
+      <h2>Catálogo</h2>
+      <div id="admin-services-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    </div>
+  </div>
+
+  <div id="screen-success" class="screen" style="text-align: center; padding-top: 100px;">
+    <div style="width: 100px; height: 100px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto;">
+      <span class="material-icons-round" style="font-size: 50px; color: #059669;">check</span>
+    </div>
+    <h1 style="margin-bottom: 10px;">Agendado!</h1>
+    <p>Seu horário foi confirmado com sucesso.</p>
+    <button class="btn-outline" style="width: 200px; margin: 20px auto;" onclick="location.reload()">Voltar ao Início</button>
+  </div>
+
+  <div id="booking-footer" class="bottom-bar" style="display: none;">
+    <div>
+      <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--text-sec); letter-spacing: 0.5px;">Total</span>
+      <div class="price-total" id="total-price">R$ 0,00</div>
+    </div>
+    <button class="btn-primary" style="width: auto; padding: 12px 24px; box-shadow: var(--shadow-md);" onclick="confirmarAgendamento()">
+      Confirmar <span class="material-icons-round" style="font-size: 18px;">check</span>
+    </button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
+
+<script>
+  function atualizarAbaAtiva(botao) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      botao.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

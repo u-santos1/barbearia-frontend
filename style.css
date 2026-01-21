@@ -1,0 +1,258 @@
+/* --- 1. VARIÁVEIS & PALETA SAAS --- */
+:root {
+  /* Cores Principais (Indigo Moderno) */
+  --primary: #4F46E5;
+  --primary-light: #EEF2FF; /* Fundo suave para seleção */
+  --primary-hover: #4338CA;
+
+  /* Superfícies */
+  --bg: #F9FAFB;            /* Fundo da página (Cinza muito claro) */
+  --surface: #FFFFFF;       /* Fundo dos Cards (Branco Puro) */
+
+  /* Tipografia (Cinza Chumbo em vez de Preto Puro) */
+  --text-main: #111827;
+  --text-sec: #6B7280;
+
+  /* Acabamento */
+  --border: #E5E7EB;
+  --radius: 16px;           /* Cantos mais arredondados */
+
+  /* Sombras (O segredo do SaaS) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* --- 2. RESET & BASE --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* --- 3. CONTAINER DO APP --- */
+#app {
+  width: 100%;
+  max-width: 500px; /* Mais estreito para parecer app nativo */
+  background: var(--bg); /* Fundo cinza para destacar os cards brancos */
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  box-shadow: none;
+}
+
+/* Desktop: Centralizado e Flutuante */
+@media(min-width: 600px) {
+  #app {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    border-radius: 24px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: var(--surface); /* No desktop, fundo branco fica melhor */
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+  }
+  body { align-items: flex-start; }
+  /* Esconde a barra de rolagem no desktop para ficar limpo */
+  #app::-webkit-scrollbar { width: 6px; }
+  #app::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 10px; }
+}
+
+/* --- 4. ELEMENTOS DE TEXTO --- */
+h1 { font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; margin-bottom: 8px; }
+h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sec); margin-top: 28px; margin-bottom: 14px; }
+p { color: var(--text-sec); font-size: 14px; line-height: 1.5; margin-bottom: 24px; }
+
+/* --- 5. INPUTS MODERNOS --- */
+.input-group { margin-bottom: 20px; }
+label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 8px; }
+
+input, select {
+  width: 100%; padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+input:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); /* Glow suave */
+}
+
+/* --- 6. BOTÕES --- */
+.btn, .btn-primary, .btn-secondary, .btn-outline {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+  display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+}
+.btn:active, .btn-primary:active { transform: scale(0.98); }
+
+.btn-primary {
+  background: var(--primary); color: white;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); /* Sombra colorida */
+}
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+.btn-secondary { background: white; border: 1px solid var(--border); color: var(--text-main); margin-top: 12px; box-shadow: var(--shadow-sm); }
+.btn-secondary:hover { background: #F9FAFB; border-color: #D1D5DB; }
+
+.btn-outline { background: transparent; border: 1px dashed var(--border); color: var(--text-sec); }
+.btn-outline:hover { border-style: solid; color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+
+/* --- 7. CARDS (O CORAÇÃO DO SAAS) --- */
+
+/* Lista de Barbeiros (Avatar) */
+.barber-list {
+  display: flex; gap: 20px; overflow-x: auto;
+  padding: 10px 4px 20px 4px; /* Espaço para a sombra não cortar */
+  scrollbar-width: none;
+}
+.barber-list::-webkit-scrollbar { display: none; }
+
+.barber-card {
+  min-width: 80px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  cursor: pointer; opacity: 0.7; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.barber-card:hover { opacity: 1; transform: translateY(-2px); }
+.barber-card.selected { opacity: 1; transform: scale(1.05); }
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #E5E7EB;
+  background-size: cover;          /* Importante para a foto preencher tudo */
+  background-position: center;     /* Importante para centralizar o rosto */
+  border: 2px solid white;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 8px;
+}
+
+/* Lista de Serviços (Cards) */
+.service-card {
+  padding: 18px;
+  background: var(--surface);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+  border: 1px solid transparent; /* Prepara borda para hover */
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border);
+}
+
+.service-card.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  box-shadow: none; /* Remove sombra para parecer "pressionado" */
+}
+
+/* Grid de Horários */
+.time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.time-slot {
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: center; font-size: 13px; font-weight: 500; color: var(--text-main);
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.time-slot:hover { border-color: var(--primary); color: var(--primary); }
+.time-slot.selected {
+  background: var(--primary); color: white; border-color: var(--primary);
+  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+}
+.time-slot.disabled {
+  background: #F3F4F6; color: #D1D5DB; border-color: transparent;
+  box-shadow: none; text-decoration: line-through; pointer-events: none;
+}
+
+/* --- 8. ADMIN DASHBOARD --- */
+.admin-card-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+}
+
+/* Badges de Status */
+.badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-right: 6px; letter-spacing: 0.5px; }
+.badge-agendado { background: #E0E7FF; color: #3730A3; }
+.badge-concluido { background: #D1FAE5; color: #065F46; }
+.badge-cancelado { background: #FEE2E2; color: #991B1B; }
+
+/* Tabs (Abas do Admin) */
+.tabs-container {
+  background: #F3F4F6; padding: 4px; border-radius: 12px;
+  display: flex; gap: 4px; margin-bottom: 24px;
+}
+.tab-btn {
+  flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  color: var(--text-sec); background: transparent; border: none; cursor: pointer; transition: 0.2s;
+}
+.tab-btn:hover { background: rgba(255,255,255,0.5); }
+.tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+/* --- 9. UTILS & FOOTER --- */
+.screen { display: none; padding: 24px; padding-bottom: 120px; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.bottom-bar {
+  position: fixed; bottom: 0; width: 100%; max-width: 500px;
+  background: rgba(255, 255, 255, 0.9); /* Transparencia estilo vidro */
+  backdrop-filter: blur(10px);
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; z-index: 100;
+}
+.price-total { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+/* --- CARD DE AÇÃO (MEUS AGENDAMENTOS) --- */
+.action-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Efeito ao clicar */
+.action-card:active { transform: scale(0.98); background: var(--bg); }
+
+/* Ícone quadrado colorido */
+.action-card .icon-box {
+    width: 44px; height: 44px;
+    background: var(--primary-light);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary);
+}
+
+.action-card strong { display: block; font-size: 14px; color: var(--text-main); font-weight: 600; }
+.action-card p { margin: 0; font-size: 12px; color: var(--text-sec); }
