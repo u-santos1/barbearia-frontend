@@ -34,14 +34,29 @@ async function buscarAgendamentos() {
 }
 
 // Chama a função para testar
-buscarAgendamentos();
+async function buscarAgendamentos() {
+    try {
+        const response = await fetch(`${API_URL}/agendamentos`, {
+            method: 'GET',
+            headers: {
+                // Removido o Content-Type (não é necessário no GET)
+                'Authorization': authHeader
+            },
+            // Adicionado para sincronizar com o allowCredentials(true) do Java
+            mode: 'cors',
+            credentials: 'include'
+        });
 
-// ESTADO GLOBAL
-let state = { clienteId: null, barbeiroId: null, servicoId: null, data: null, hora: null, preco: 0, token: null };
-
-// --- 1. FUNÇÕES UTILITÁRIAS (FORMATADORES) ---
-function formatarMoeda(valor) {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+        if (response.ok) {
+            const dados = await response.json();
+            console.log("Sucesso! Agendamentos:", dados);
+        } else {
+            console.error("Erro na requisição:", response.status);
+            // Se der 401 aqui, a senha '123456' ou o user 'admin' estão diferentes no Railway
+        }
+    } catch (error) {
+        console.error("Erro de conexão (CORS provável):", error);
+    }
 }
 
 function formatarData(dataISO) {
