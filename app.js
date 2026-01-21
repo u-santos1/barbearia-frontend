@@ -265,6 +265,16 @@ async function carregarDadosIniciais() {
     state.data = hoje;
     showLoading();
     try {
+            const res = await fetch(`${API_URL}/barbeiros`);
+            console.log("Status da Resposta:", res.status); // ADICIONE ISSO
+
+            if (!res.ok) {
+                throw new Error(`Erro no servidor: ${res.status}`);
+            }
+
+            const barbeiros = await res.json();
+            console.log("Barbeiros recebidos:", barbeiros);
+    try {
         const res = await fetch(`${API_URL}/barbeiros`);
         const barbeiros = await res.json();
 
