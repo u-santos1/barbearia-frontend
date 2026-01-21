@@ -1,62 +1,23 @@
-
-// O link campeão que funcionou no Postman:
+// --- CONFIGURAÇÕES GLOBAIS ---
 const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
 
-// 2. Seus dados de login (Aqueles que configuramos no Railway)
-const USUARIO = "admin";
-const SENHA = "123456";
+// ESTADO DA APLICAÇÃO
+const state = {
+    barbeiroId: null,
+    servicoId: null,
+    data: null,
+    hora: null,
+    clienteId: null, // Armazena o ID do cliente logado
+    token: null,     // Armazena o token Basic Auth do Admin
+    preco: 0
+};
 
-// Função para codificar a senha (Padrão Basic Auth)
-// O btoa() transforma texto em Base64, que é o formato exigido
-const authHeader = 'Basic ' + btoa(USUARIO + ":" + SENHA);
+// --- FUNÇÕES AUXILIARES DE UI ---
+function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
+function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
 
-async function buscarAgendamentos() {
-    try {
-        const response = await fetch(`${API_URL}/agendamentos`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                // 3. AQUI ESTÁ O SEGREDO! Sem isso, dá erro 401
-                'Authorization': authHeader
-            }
-        });
-
-        if (response.ok) {
-            const dados = await response.json();
-            console.log("Sucesso! Agendamentos:", dados);
-            // Aqui você desenha na tela (document.getElementById...)
-        } else {
-            console.error("Erro na requisição:", response.status);
-        }
-    } catch (error) {
-        console.error("Erro de conexão:", error);
-    }
-}
-
-// Chama a função para testar
-async function buscarAgendamentos() {
-    try {
-        const response = await fetch(`${API_URL}/agendamentos`, {
-            method: 'GET',
-            headers: {
-                // Removido o Content-Type (não é necessário no GET)
-                'Authorization': authHeader
-            },
-            // Adicionado para sincronizar com o allowCredentials(true) do Java
-            mode: 'cors',
-            credentials: 'include'
-        });
-
-        if (response.ok) {
-            const dados = await response.json();
-            console.log("Sucesso! Agendamentos:", dados);
-        } else {
-            console.error("Erro na requisição:", response.status);
-            // Se der 401 aqui, a senha '123456' ou o user 'admin' estão diferentes no Railway
-        }
-    } catch (error) {
-        console.error("Erro de conexão (CORS provável):", error);
-    }
+function formatarMoeda(valor) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 }
 
 function formatarData(dataISO) {
@@ -75,10 +36,7 @@ function renderEmptyState(mensagem) {
     `;
 }
 
-function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
-function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
-
-// --- 2. O "TÚNEL SEGURO" (ISOLAMENTO DO ADMIN) ---
+// --- 1. O "TÚNEL SEGURO" (FETCH DO ADMIN) ---
 async function fetchAdmin(endpoint, options = {}) {
     if (!state.token) {
         navegarPara('screen-login');
@@ -103,7 +61,7 @@ async function fetchAdmin(endpoint, options = {}) {
     return res;
 }
 
-// --- 3. NAVEGAÇÃO ---
+// --- 2. NAVEGAÇÃO ---
 function navegarPara(screenId) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
@@ -117,32 +75,34 @@ function navegarPara(screenId) {
     }
 }
 
-// --- 4. VALIDAÇÃO DE DATA (REGRA DE NEGÓCIO) ---
-document.getElementById('date-picker').addEventListener('change', (e) => {
-    const dataSelecionada = e.target.value;
+// --- 3. VALIDAÇÃO DE DATA ---
+const datePicker = document.getElementById('date-picker');
+if (datePicker) {
+    datePicker.addEventListener('change', (e) => {
+        const dataSelecionada = e.target.value;
+        if (!dataSelecionada) return;
 
-    if (!dataSelecionada) return;
+        const dataObj = new Date(dataSelecionada + 'T00:00:00');
+        const diaSemana = dataObj.getDay(); // 0 = Domingo, 1 = Segunda ...
 
-    const dataObj = new Date(dataSelecionada + 'T00:00:00');
-    const diaSemana = dataObj.getDay(); // 0 = Domingo, 1 = Segunda ...
+        if (diaSemana === 0 || diaSemana === 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Estamos Fechados!',
+                text: 'A barbearia não funciona aos domingos e segundas-feiras. Por favor, escolha outro dia.'
+            });
+            e.target.value = '';
+            state.data = null;
+            document.getElementById('grid-times').innerHTML = '';
+            return;
+        }
 
-    if (diaSemana === 0 || diaSemana === 1) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Estamos Fechados!',
-            text: 'A barbearia não funciona aos domingos e segundas-feiras. Por favor, escolha outro dia.'
-        });
-        e.target.value = '';
-        state.data = null;
-        document.getElementById('grid-times').innerHTML = '';
-        return;
-    }
+        state.data = dataSelecionada;
+        carregarHorarios();
+    });
+}
 
-    state.data = dataSelecionada;
-    carregarHorarios();
-});
-
-// --- 5. LOGIN E RECUPERAÇÃO ---
+// --- 4. LOGIN E RECUPERAÇÃO ---
 async function fazerLogin() {
     const idInput = document.getElementById('loginId').value.trim();
     if(!idInput) return Swal.fire('Digite seu ID ou admin');
@@ -156,11 +116,13 @@ async function fazerLogin() {
         });
 
         if (password) {
+            // Cria o token Basic Auth
             const tokenCandidato = 'Basic ' + btoa('admin:' + password);
             state.token = tokenCandidato;
 
             showLoading();
             try {
+                // Tenta buscar dados para validar a senha
                 const res = await fetchAdmin('/agendamentos/admin/todos');
                 if (res.ok) {
                     hideLoading();
@@ -172,9 +134,11 @@ async function fazerLogin() {
             } catch (e) {
                 hideLoading();
                 state.token = null;
+                Swal.fire('Erro', 'Senha incorreta ou erro de conexão', 'error');
             }
         }
     } else {
+        // Login de Cliente (apenas ID visual)
         state.clienteId = idInput;
         document.getElementById('user-name-display').innerText = "Cliente #" + idInput;
         navegarPara('screen-booking');
@@ -216,10 +180,11 @@ async function recuperarId() {
 
 function logout() {
     state.token = null;
+    state.clienteId = null;
     location.reload();
 }
 
-// --- 6. CLIENTE: CADASTRO E AGENDAMENTO ---
+// --- 5. CLIENTE: CADASTRO ---
 async function cadastrarCliente() {
     const nome = document.getElementById('regNome').value;
     const email = document.getElementById('regEmail').value;
@@ -239,7 +204,6 @@ async function cadastrarCliente() {
             const cli = await res.json();
             document.getElementById('loginId').value = cli.id;
 
-            // UX Melhorada: Mostra o ID antes de logar
             Swal.fire({
                 title: 'Cadastro Sucesso!',
                 html: `Seu ID de acesso é: <h1 style="color:#2563EB">${cli.id}</h1>Anote este número!`,
@@ -259,40 +223,35 @@ async function cadastrarCliente() {
     finally { hideLoading(); }
 }
 
+// --- 6. CARREGAR BARBEIROS E SERVIÇOS ---
 async function carregarDadosIniciais() {
+    // Define a data de hoje no input
     const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById('date-picker').value = hoje;
+    const elDate = document.getElementById('date-picker');
+    if(elDate) elDate.value = hoje;
     state.data = hoje;
+
     showLoading();
     try {
-            const res = await fetch(`${API_URL}/barbeiros`);
-            console.log("Status da Resposta:", res.status); // ADICIONE ISSO
-
-            if (!res.ok) {
-                throw new Error(`Erro no servidor: ${res.status}`);
-            }
-
-            const barbeiros = await res.json();
-            console.log("Barbeiros recebidos:", barbeiros);
-    try {
+        // --- BUSCAR BARBEIROS ---
         const res = await fetch(`${API_URL}/barbeiros`);
+        if (!res.ok) throw new Error("Erro ao buscar barbeiros");
         const barbeiros = await res.json();
 
         const lista = document.getElementById('list-barbers');
         lista.innerHTML = '';
 
-        // LISTA DE FOTOS REAIS (Para parecer profissional)
+        // Fotos fictícias para demo
         const fotosMock = [
-            'https://images.unsplash.com/photo-1580256081112-e49377338b7f?auto=format&fit=crop&w=200&q=80', // Barbeiro 1
-            'https://images.unsplash.com/photo-1618077360395-f3068be8e001?auto=format&fit=crop&w=200&q=80', // Barbeiro 2
-            'https://images.unsplash.com/photo-1534030347209-7147fd69a370?auto=format&fit=crop&w=200&q=80', // Barbeiro 3
+            'https://images.unsplash.com/photo-1580256081112-e49377338b7f?auto=format&fit=crop&w=200&q=80',
+            'https://images.unsplash.com/photo-1618077360395-f3068be8e001?auto=format&fit=crop&w=200&q=80',
+            'https://images.unsplash.com/photo-1534030347209-7147fd69a370?auto=format&fit=crop&w=200&q=80',
         ];
 
         barbeiros.forEach((b, index) => {
-            // Nota aleatória entre 4.7 e 5.0 para dar credibilidade
             const nota = (Math.random() * (5.0 - 4.7) + 4.7).toFixed(1);
             const avaliacoes = Math.floor(Math.random() * 100) + 20;
-            const foto = fotosMock[index % fotosMock.length]; // Pega uma foto da lista
+            const foto = fotosMock[index % fotosMock.length];
 
             const div = document.createElement('div');
             div.className = 'barber-card';
@@ -316,16 +275,18 @@ async function carregarDadosIniciais() {
             lista.appendChild(div);
         });
 
+        // --- BUSCAR SERVIÇOS ---
         const resS = await fetch(`${API_URL}/servicos`);
+        if (!resS.ok) throw new Error("Erro ao buscar serviços");
         const servicos = await resS.json();
+
         const listaS = document.getElementById('list-services');
         listaS.innerHTML = '';
 
         servicos.forEach(s => {
-            // Descrição fake baseada no nome para dar valor
-            let descricao = "Procedimento padrão com acabamento.";
-            if(s.nome.toLowerCase().includes('barba')) descricao = "Modelagem, toalha quente e pós-barba.";
-            if(s.nome.toLowerCase().includes('corte')) descricao = "Lavagem, corte e finalização com pomada.";
+            let descricao = "Procedimento padrão.";
+            if(s.nome.toLowerCase().includes('barba')) descricao = "Modelagem e toalha quente.";
+            if(s.nome.toLowerCase().includes('corte')) descricao = "Corte e finalização.";
 
             const div = document.createElement('div');
             div.className = 'service-card';
@@ -346,10 +307,18 @@ async function carregarDadosIniciais() {
             };
             listaS.appendChild(div);
         });
-    } catch (e) { document.getElementById('booking-error').style.display = 'block'; document.getElementById('booking-error').innerText = "Erro ao carregar dados"; }
+    } catch (e) {
+        console.error(e);
+        const elError = document.getElementById('booking-error');
+        if(elError) {
+            elError.style.display = 'block';
+            elError.innerText = "Erro ao carregar dados. Verifique a conexão.";
+        }
+    }
     finally { hideLoading(); }
 }
 
+// --- 7. HORÁRIOS E CONFIRMAÇÃO ---
 async function carregarHorarios() {
     if(!state.barbeiroId || !state.data) return;
     const grid = document.getElementById('grid-times');
@@ -358,21 +327,33 @@ async function carregarHorarios() {
         const res = await fetch(`${API_URL}/agendamentos/barbeiro/${state.barbeiroId}?data=${state.data}`);
         const ocupados = await res.json();
         const horasOcupadas = ocupados.map(a => a.dataHoraInicio.split('T')[1].substring(0, 5));
+
         grid.innerHTML = '';
         for(let i=9; i<=18; i++) {
             const hora = i.toString().padStart(2, '0') + ":00";
             const div = document.createElement('div');
             div.className = 'time-slot';
             div.innerText = hora;
-            if(horasOcupadas.includes(hora)) div.classList.add('disabled');
-            else div.onclick = () => { state.hora = hora; document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected')); div.classList.add('selected'); };
+
+            if(horasOcupadas.includes(hora)) {
+                div.classList.add('disabled');
+            } else {
+                div.onclick = () => {
+                    state.hora = hora;
+                    document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+                    div.classList.add('selected');
+                };
+            }
             grid.appendChild(div);
         }
-    } catch(e) { grid.innerHTML = '<p>Erro</p>'; }
+    } catch(e) {
+        grid.innerHTML = '<p>Erro ao buscar horários</p>';
+    }
 }
 
 async function confirmarAgendamento() {
-    if(!state.clienteId || !state.barbeiroId || !state.servicoId || !state.hora) return Swal.fire('Complete os dados');
+    if(!state.clienteId || !state.barbeiroId || !state.servicoId || !state.hora) return Swal.fire('Complete os dados', 'Selecione Barbeiro, Serviço e Horário.', 'warning');
+
     showLoading();
     try {
         const res = await fetch(`${API_URL}/agendamentos`, {
@@ -394,7 +375,7 @@ async function confirmarAgendamento() {
                 timer: 1500
             });
 
-            // Atualiza a tela de sucesso com dados reais
+            // Tela de Sucesso
             document.getElementById('screen-success').innerHTML = `
                 <div style="text-align: center; padding-top: 60px;">
                     <div style="width: 80px; height: 80px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto;">
@@ -415,22 +396,22 @@ async function confirmarAgendamento() {
                     <button class="btn-outline" style="margin-top:15px; border:none;" onclick="location.reload()">Voltar ao Início</button>
                 </div>
             `;
-
             navegarPara('screen-success');
         }
-        else Swal.fire('Erro ao agendar');
-    } catch(e) { Swal.fire('Erro Conexão'); }
+        else {
+            Swal.fire('Erro ao agendar', 'Tente outro horário.', 'error');
+        }
+    } catch(e) { Swal.fire('Erro Conexão', 'Não foi possível agendar.', 'error'); }
     finally { hideLoading(); }
 }
 
-// Função Auxiliar para abrir o Zap
 function enviarWhatsapp() {
     const texto = `Olá! Acabei de agendar na Barbearia para ${formatarData(state.data + 'T' + state.hora)}. Podem confirmar?`;
     // Coloque aqui o número da barbearia real
     window.open(`https://wa.me/5521993434258?text=${encodeURIComponent(texto)}`, '_blank');
 }
 
-// --- 7. ADMIN ---
+// --- 8. ÁREA ADMIN (DASHBOARD) ---
 async function carregarAdmin() {
     mostrarAbaAdmin('dashboard');
     showLoading();
@@ -448,7 +429,6 @@ async function carregarAdmin() {
             lista.innerHTML = renderEmptyState('Nenhum agendamento encontrado.');
         } else {
             agendamentos.forEach(a => {
-              // Lógica de Cores da Badge
               let classeCor = 'badge-agendado';
               if(a.status === 'CONCLUIDO') classeCor = 'badge-concluido';
               if(a.status === 'CANCELADO') classeCor = 'badge-cancelado';
@@ -459,16 +439,17 @@ async function carregarAdmin() {
                 <div>
                     <span class="badge ${classeCor}">${a.status || 'AGENDADO'}</span>
                     <div style="font-weight:600; margin-top:4px;">${formatarData(a.dataHoraInicio)}</div>
-                    <div style="font-size:12px; color:var(--text-sec);">${a.cliente.nome} com ${a.barbeiro.nome}</div>
+                    <div style="font-size:12px; color:var(--text-sec);">${a.cliente ? a.cliente.nome : 'Cliente'} com ${a.barbeiro ? a.barbeiro.nome : 'Barbeiro'}</div>
                 </div>
                 <div style="text-align:right">
                     <div style="font-weight:700; color:var(--text-main);">${formatarMoeda(a.valorCobrado)}</div>
-                    <div style="font-size:11px; color:var(--text-sec);">${a.servico.nome}</div>
+                    <div style="font-size:11px; color:var(--text-sec);">${a.servico ? a.servico.nome : 'Serviço'}</div>
                 </div>`;
               lista.appendChild(div);
             });
         }
 
+        // Gráfico (Chart.js)
         const ctx = document.getElementById('myChart');
         if(ctx) {
              const contador = {};
@@ -476,7 +457,10 @@ async function carregarAdmin() {
                  const n = a.servico ? a.servico.nome : 'Outros';
                  contador[n] = (contador[n] || 0) + 1;
              });
+             // Verifica se existe window.myAdminChart (se já foi criado, destroi)
              if(window.myAdminChart instanceof Chart) window.myAdminChart.destroy();
+
+             // Cria novo gráfico
              window.myAdminChart = new Chart(ctx, {
                  type: 'doughnut',
                  data: {
@@ -486,10 +470,11 @@ async function carregarAdmin() {
                  options: { maintainAspectRatio: false, cutout: '70%' }
              });
         }
-    } catch(e) { console.error(e); }
+    } catch(e) { console.error("Erro dashboard:", e); }
     finally { hideLoading(); }
 }
 
+// --- ADMIN: BARBEIROS ---
 async function addBarbeiro() {
     const nome = document.getElementById('newBarbNome').value;
     const email = document.getElementById('newBarbEmail').value;
@@ -512,11 +497,14 @@ async function deletarBarbeiro(id) {
 }
 
 async function carregarListaBarbeirosAdmin() {
-    const res = await fetch(`${API_URL}/barbeiros`);
-    const dados = await res.json();
-    renderLista(dados, 'admin-barbers-list', 'deletarBarbeiro');
+    try {
+        const res = await fetch(`${API_URL}/barbeiros`);
+        const dados = await res.json();
+        renderLista(dados, 'admin-barbers-list', 'deletarBarbeiro');
+    } catch(e) {}
 }
 
+// --- ADMIN: SERVIÇOS ---
 async function addServico() {
     const nome = document.getElementById('newServNome').value;
     const preco = document.getElementById('newServPreco').value;
@@ -539,15 +527,18 @@ async function deletarServico(id) {
 }
 
 async function carregarListaServicosAdmin() {
-    const res = await fetch(`${API_URL}/servicos`);
-    const dados = await res.json();
-    renderLista(dados, 'admin-services-list', 'deletarServico');
+    try {
+        const res = await fetch(`${API_URL}/servicos`);
+        const dados = await res.json();
+        renderLista(dados, 'admin-services-list', 'deletarServico');
+    } catch(e) {}
 }
 
+// Auxiliares Admin
 function renderLista(dados, elementId, deleteFunc) {
     const lista = document.getElementById(elementId);
     lista.innerHTML = '';
-    if(dados.length === 0) {
+    if(!dados || dados.length === 0) {
         lista.innerHTML = renderEmptyState('Nenhum registro encontrado.');
         return;
     }
@@ -571,17 +562,15 @@ function mostrarAbaAdmin(aba) {
     if(aba === 'servicos') carregarListaServicosAdmin();
 }
 
-// --- 8. MEUS AGENDAMENTOS (CLIENTE) ---
+// --- 9. MEUS AGENDAMENTOS (CLIENTE) ---
 async function abrirMeusAgendamentos() {
     if (!state.clienteId) return;
 
-    // 1. Busca os dados
     showLoading();
     try {
         const res = await fetch(`${API_URL}/agendamentos/cliente/${state.clienteId}`);
         const lista = await res.json();
 
-        // 2. Monta o HTML da lista
         let htmlContent = `<div style="text-align:left; max-height:300px; overflow-y:auto;">`;
 
         if (lista.length === 0) {
@@ -591,8 +580,7 @@ async function abrirMeusAgendamentos() {
                 const dataFormatada = formatarData(a.dataHoraInicio);
                 const podeCancelar = a.status !== 'CANCELADO' && a.status !== 'CONCLUIDO';
 
-                // Define cor do status
-                let corStatus = '#3730A3'; // Azul (Agendado)
+                let corStatus = '#3730A3';
                 let bgStatus = '#E0E7FF';
                 if(a.status === 'CANCELADO') { corStatus = '#991B1B'; bgStatus = '#FEE2E2'; }
                 if(a.status === 'CONCLUIDO') { corStatus = '#065F46'; bgStatus = '#D1FAE5'; }
@@ -616,7 +604,6 @@ async function abrirMeusAgendamentos() {
 
         hideLoading();
 
-        // 3. Mostra o Modal
         Swal.fire({
             title: 'Meus Agendamentos',
             html: htmlContent,
@@ -650,7 +637,7 @@ async function cancelarAgendamento(id) {
                 hideLoading();
                 await Swal.fire('Cancelado!', 'O agendamento foi cancelado.', 'success');
                 abrirMeusAgendamentos();
-                carregarHorarios();
+                carregarHorarios(); // Atualiza a grid para liberar o horário
             } else {
                 throw new Error();
             }
