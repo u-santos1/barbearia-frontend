@@ -129,61 +129,36 @@
   </div>
 
   <div id="screen-admin" class="screen">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-      <h1 style="color: var(--text-main); margin:0;">Painel Admin</h1>
-      <button onclick="logout()" class="btn-outline" style="width: auto; padding: 8px 12px; font-size: 12px; margin: 0; color: #EF4444; border-color: #FECACA;">
-        Sair
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <div>
+        <h1 style="margin:0; font-size:20px;">Gestão</h1>
+        <p style="margin:0; font-size:12px; color:var(--text-sec);">Bem-vindo, Chefe 💈</p>
+      </div>
+      <button onclick="logout()" style="background:#FEE2E2; color:#991B1B; border:none; padding:8px; border-radius:8px; cursor:pointer;">
+        <span class="material-icons-round">logout</span>
       </button>
     </div>
 
-    <div class="tabs-container">
-      <button class="tab-btn active" onclick="mostrarAbaAdmin('dashboard'); atualizarAbaAtiva(this)">Visão Geral</button>
-      <button class="tab-btn" onclick="mostrarAbaAdmin('equipe'); atualizarAbaAtiva(this)">Equipe</button>
-      <button class="tab-btn" onclick="mostrarAbaAdmin('servicos'); atualizarAbaAtiva(this)">Serviços</button>
+    <div id="admin-content">
     </div>
 
-    <div id="tab-dashboard">
-      <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-        <div style="flex: 1; background: var(--primary-light); padding: 20px; border-radius: var(--radius); border: 1px solid rgba(79, 70, 229, 0.1);">
-          <label style="color: var(--primary); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Agendamentos</label>
-          <div style="font-size: 28px; font-weight: 800; color: var(--text-main); margin-top: 5px;" id="admin-count">0</div>
-        </div>
-        <div style="flex: 1; background: #ECFDF5; padding: 20px; border-radius: var(--radius); border: 1px solid #A7F3D0;">
-          <label style="color: #059669; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Faturamento</label>
-          <div style="font-size: 28px; font-weight: 800; color: #064E3B; margin-top: 5px;" id="admin-revenue">R$ 0</div>
-        </div>
-      </div>
-
-      <div style="background: var(--surface); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 24px; position: relative; height: 220px; box-shadow: var(--shadow-sm);">
-        <canvas id="myChart"></canvas>
-      </div>
-
-      <h2>Próximos Agendamentos</h2>
-      <div id="admin-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-    </div>
-
-    <div id="tab-equipe" style="display: none;">
-      <div style="background: var(--primary-light); padding: 20px; border-radius: var(--radius); margin-bottom: 24px; border: 1px dashed var(--primary);">
-        <h2 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);">+ Novo Profissional</h2>
-        <input type="text" id="newBarbNome" placeholder="Nome" style="margin-bottom: 10px;">
-        <input type="email" id="newBarbEmail" placeholder="Email" style="margin-bottom: 10px;">
-        <input type="text" id="newBarbEsp" placeholder="Especialidade" style="margin-bottom: 10px;">
-        <button class="btn-primary" style="padding: 10px;" onclick="addBarbeiro()">Adicionar</button>
-      </div>
-      <h2>Equipe Cadastrada</h2>
-      <div id="admin-barbers-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
-    </div>
-
-    <div id="tab-servicos" style="display: none;">
-      <div style="background: var(--primary-light); padding: 20px; border-radius: var(--radius); margin-bottom: 24px; border: 1px dashed var(--primary);">
-        <h2 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);">+ Novo Serviço</h2>
-        <input type="text" id="newServNome" placeholder="Nome do Serviço" style="margin-bottom: 10px;">
-        <input type="number" id="newServPreco" placeholder="Preço (R$)" style="margin-bottom: 10px;">
-        <input type="number" id="newServTempo" placeholder="Duração (minutos)" style="margin-bottom: 10px;">
-        <button class="btn-primary" style="padding: 10px;" onclick="addServico()">Adicionar</button>
-      </div>
-      <h2>Catálogo</h2>
-      <div id="admin-services-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    <div class="admin-bottom-nav">
+      <button class="nav-item active" onclick="navegarAdmin('dashboard')">
+        <span class="material-icons-round">analytics</span>
+        <span>Visão</span>
+      </button>
+      <button class="nav-item" onclick="navegarAdmin('agenda')">
+        <span class="material-icons-round">calendar_today</span>
+        <span>Agenda</span>
+      </button>
+      <button class="nav-item" onclick="navegarAdmin('servicos')">
+        <span class="material-icons-round">content_cut</span>
+        <span>Serviços</span>
+      </button>
+      <button class="nav-item" onclick="navegarAdmin('equipe')">
+        <span class="material-icons-round">groups</span>
+        <span>Equipe</span>
+      </button>
     </div>
   </div>
 

@@ -345,3 +345,61 @@ input:focus, select:focus {
   display: flex; justify-content: space-between; align-items: center; z-index: 100;
 }
 .price-total { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+/* --- ADMIN ESTILO INBARBER --- */
+
+/* Cards de Métricas (Topo) */
+.metrics-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 colunas */
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background: white;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #F3F4F6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex; flex-direction: column;
+}
+
+.metric-value { font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px; }
+.metric-label { font-size: 11px; color: var(--text-sec); font-weight: 500; text-transform: uppercase; }
+
+/* Menu Inferior Fixo (Bottom Nav) */
+.admin-bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: #111827; /* Preto Profissional */
+    border-radius: 50px; /* Borda bem redonda */
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.nav-item {
+    background: none; border: none;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: #9CA3AF; /* Cinza apagado */
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.nav-item span:first-child { font-size: 20px; } /* Ícone */
+.nav-item span:last-child { font-size: 9px; font-weight: 600; } /* Texto */
+
+.nav-item.active {
+    color: white; /* Branco acesso */
+    transform: translateY(-2px);
+}
+.nav-item.active span:first-child { color: #818CF8; } /* Ícone Roxo/Azul */
+
+/* Ajuste para o conteúdo não ficar escondido atrás do menu */
+#admin-content { padding-bottom: 80px; }
