@@ -185,14 +185,36 @@ input:focus, select:focus {
 }
 
 /* --- 8. ADMIN DASHBOARD --- */
+
 .admin-card-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 20px;
-  border-radius: 16px;
-  display: flex; justify-content: space-between; align-items: center;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #F3F4F6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+
+    /* ORGANIZAÇÃO VERTICAL: Dados em cima, Botões em baixo */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* A parte de cima onde ficam os textos (Data, Nome, Preço) */
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* Onde ficam os botões (sempre no final) */
+.actions-row {
+    padding-top: 10px;
+    border-top: 1px solid #F3F4F6;
+    display: flex;
+    justify-content: flex-end; /* Alinha botões à direita */
+    gap: 8px;
 }
 
 /* Badges de Status */
