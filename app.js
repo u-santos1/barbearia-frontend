@@ -607,12 +607,100 @@ async function deletarBarbeiro(id) {
     }
 }
 
-async function carregarListaBarbeirosAdmin() {
+// --- ADMIN: EQUIPE (Versão Dinâmica) ---
+async function carregarListaBarbeirosAdmin(container) {
+    // 1. Monta a estrutura (Cabeçalho + Lista Vazia)
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0; font-size:16px;">Time de Barbeiros</h2>
+            <button class="btn-primary" style="width:auto; padding:8px 16px; font-size:12px; height:36px;" onclick="modalAddBarbeiro()">
+                <span class="material-icons-round" style="font-size:14px">add</span> Novo
+            </button>
+        </div>
+        <div id="lista-equipe-dinamica" style="display:flex; flex-direction:column; gap:10px;">
+            <div style="text-align:center; padding:20px; color:#9CA3AF;">
+                <span class="material-icons-round spin">sync</span> Carregando...
+            </div>
+        </div>
+    `;
+
     try {
         const res = await fetch(`${API_URL}/barbeiros`);
-        const dados = await res.json();
-        renderLista(dados, 'admin-barbers-list', 'deletarBarbeiro');
-    } catch(e) {}
+        const barbeiros = await res.json();
+        const listaDiv = document.getElementById('lista-equipe-dinamica');
+
+        if(barbeiros.length === 0) {
+            listaDiv.innerHTML = renderEmptyState('Nenhum barbeiro cadastrado.');
+            return;
+        }
+
+        listaDiv.innerHTML = ''; // Limpa loading
+        barbeiros.forEach(b => {
+            const div = document.createElement('div');
+            div.className = 'admin-card-item'; // Reusa seu estilo de card
+            div.style.flexDirection = 'row'; // Ajuste para ficar lado a lado
+            div.style.alignItems = 'center';
+            div.style.justifyContent = 'space-between';
+
+            div.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:40px; height:40px; background:#E0E7FF; color:#4F46E5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">
+                        ${b.nome.charAt(0)}
+                    </div>
+                    <div>
+                        <div style="font-weight:600; color:#111827;">${b.nome}</div>
+                        <div style="font-size:11px; color:#6B7280;">${b.especialidade || 'Barbeiro'}</div>
+                    </div>
+                </div>
+                <button onclick="deletarBarbeiro(${b.id})" style="color:#EF4444; background:#FEF2F2; border:none; width:36px; height:36px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;">
+                    <span class="material-icons-round" style="font-size:18px;">delete</span>
+                </button>
+            `;
+            listaDiv.appendChild(div);
+        });
+    } catch(e) {
+        container.innerHTML = '<p style="text-align:center; color:red">Erro ao carregar equipe.</p>';
+    }
+}
+
+// NOVO: Modal para Adicionar Barbeiro (Usando SweetAlert Mixin)
+async function modalAddBarbeiro() {
+    const { value: formValues } = await Swal.fire({
+        title: 'Novo Barbeiro',
+        html:
+            '<input id="swal-nome" class="swal2-input" placeholder="Nome Completo">' +
+            '<input id="swal-email" class="swal2-input" placeholder="Email (Login)">' +
+            '<input id="swal-esp" class="swal2-input" placeholder="Especialidade (ex: Cortes Clássicos)">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Salvar',
+        preConfirm: () => {
+            return [
+                document.getElementById('swal-nome').value,
+                document.getElementById('swal-email').value,
+                document.getElementById('swal-esp').value
+            ]
+        }
+    });
+
+    if (formValues) {
+        const [nome, email, especialidade] = formValues;
+        if(!nome || !email) return Swal.fire('Erro', 'Nome e Email são obrigatórios', 'error');
+
+        showLoading();
+        try {
+            await fetchAdmin('/barbeiros', {
+                method: 'POST',
+                body: JSON.stringify({ nome, email, especialidade })
+            });
+            Swal.fire('Sucesso', 'Barbeiro adicionado!', 'success');
+            // Recarrega a aba atual
+            const container = document.getElementById('admin-content');
+            if(container) carregarListaBarbeirosAdmin(container);
+        } catch(e) {
+            Swal.fire('Erro', 'Não foi possível salvar.', 'error');
+        } finally { hideLoading(); }
+    }
 }
 
 // --- ADMIN: SERVIÇOS ---
@@ -630,19 +718,121 @@ async function addServico() {
     } catch(e) {}
 }
 
-async function deletarServico(id) {
+async function deletarBarbeiro(id) {
     if(await confirmar()) {
-        await fetchAdmin(`/servicos/${id}`, { method: 'DELETE' });
-        carregarListaServicosAdmin();
+        showLoading();
+        await fetchAdmin(`/barbeiros/${id}`, { method: 'DELETE' });
+        hideLoading();
+        // Recarrega a tela certa
+        const container = document.getElementById('admin-content');
+        if(container) carregarListaBarbeirosAdmin(container);
     }
 }
 
-async function carregarListaServicosAdmin() {
+async function deletarServico(id) {
+    if(await confirmar()) {
+        showLoading();
+        await fetchAdmin(`/servicos/${id}`, { method: 'DELETE' });
+        hideLoading();
+        // Recarrega a tela certa
+        const container = document.getElementById('admin-content');
+        if(container) carregarListaServicosAdmin(container);
+    }
+}
+
+// --- ADMIN: SERVIÇOS (Versão Dinâmica) ---
+async function carregarListaServicosAdmin(container) {
+    container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h2 style="margin:0; font-size:16px;">Tabela de Preços</h2>
+            <button class="btn-primary" style="width:auto; padding:8px 16px; font-size:12px; height:36px;" onclick="modalAddServico()">
+                <span class="material-icons-round" style="font-size:14px">add</span> Novo
+            </button>
+        </div>
+        <div id="lista-servicos-dinamica" style="display:flex; flex-direction:column; gap:10px;">
+            <div style="text-align:center; padding:20px; color:#9CA3AF;">
+                <span class="material-icons-round spin">sync</span> Carregando...
+            </div>
+        </div>
+    `;
+
     try {
         const res = await fetch(`${API_URL}/servicos`);
-        const dados = await res.json();
-        renderLista(dados, 'admin-services-list', 'deletarServico');
-    } catch(e) {}
+        const servicos = await res.json();
+        const listaDiv = document.getElementById('lista-servicos-dinamica');
+
+        if(servicos.length === 0) {
+            listaDiv.innerHTML = renderEmptyState('Nenhum serviço cadastrado.');
+            return;
+        }
+
+        listaDiv.innerHTML = '';
+        servicos.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'admin-card-item';
+            div.style.flexDirection = 'row';
+            div.style.alignItems = 'center';
+            div.style.justifyContent = 'space-between';
+
+            div.innerHTML = `
+                <div>
+                    <div style="font-weight:600; color:#111827;">${s.nome}</div>
+                    <div style="font-size:11px; color:#6B7280; margin-top:2px;">
+                        ${s.duracaoEmMinutos} min • Presencial
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:700; color:#059669;">${formatarMoeda(s.preco)}</span>
+                    <button onclick="deletarServico(${s.id})" style="color:#EF4444; background:#FEF2F2; border:none; width:32px; height:32px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                        <span class="material-icons-round" style="font-size:16px;">delete</span>
+                    </button>
+                </div>
+            `;
+            listaDiv.appendChild(div);
+        });
+    } catch(e) {
+        container.innerHTML = '<p style="text-align:center; color:red">Erro ao carregar serviços.</p>';
+    }
+}
+
+// NOVO: Modal para Adicionar Serviço
+async function modalAddServico() {
+    const { value: formValues } = await Swal.fire({
+        title: 'Novo Serviço',
+        html:
+            '<input id="swal-s-nome" class="swal2-input" placeholder="Nome (ex: Corte Navalhado)">' +
+            '<input id="swal-s-preco" type="number" class="swal2-input" placeholder="Preço (ex: 35.00)">' +
+            '<input id="swal-s-tempo" type="number" class="swal2-input" placeholder="Duração (minutos)">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Salvar',
+        preConfirm: () => {
+            return [
+                document.getElementById('swal-s-nome').value,
+                document.getElementById('swal-s-preco').value,
+                document.getElementById('swal-s-tempo').value
+            ]
+        }
+    });
+
+    if (formValues) {
+        const [nome, preco, tempo] = formValues;
+        if(!nome || !preco || !tempo) return Swal.fire('Erro', 'Preencha tudo!', 'warning');
+
+        showLoading();
+        try {
+            await fetchAdmin('/servicos', {
+                method: 'POST',
+                body: JSON.stringify({ nome, preco, duracaoEmMinutos: tempo })
+            });
+            Swal.fire('Sucesso', 'Serviço salvo!', 'success');
+
+            const container = document.getElementById('admin-content');
+            if(container) carregarListaServicosAdmin(container);
+        } catch(e) {
+            Swal.fire('Erro', 'Falha ao salvar.', 'error');
+        } finally { hideLoading(); }
+    }
 }
 
 // Auxiliares Admin
