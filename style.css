@@ -113,68 +113,65 @@ input:focus, select:focus {
 /* --- 7. CARDS (O CORAÇÃO DO SAAS) --- */
 
 /* Lista de Barbeiros (Avatar) */
-/* CARD DO BARBEIRO (Melhorado) */
-.barber-card {
-    background: white;
-    padding: 15px;
-    border-radius: 16px;
-    border: 2px solid #F3F4F6; /* Borda cinza suave padrão */
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative; /* Importante para o ícone de Check */
+/* LISTA DE SERVIÇOS (Container) */
+#list-services {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    gap: 10px; /* Espaço entre cada serviço */
+    padding-bottom: 20px; /* Espaço no final para não colar no rodapé */
 }
 
-.barber-card:hover {
-    border-color: #BFDBFE; /* Azul claro ao passar o mouse */
-    transform: translateY(-3px); /* Leve subida */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
+/* CARD INDIVIDUAL DO SERVIÇO */
+.service-card {
+    background: white;
+    padding: 16px; /* Mais espaço interno */
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
 
-/* ESTADO SELECIONADO (O Segredo da Intuição) */
-.barber-card.selected {
-    border-color: #2563EB; /* Borda Azul Forte */
-    background-color: #EFF6FF; /* Fundo Azulzinho */
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); /* Aura azul */
-}
-
-/* ÍCONE DE CHECK (Só aparece quando selecionado) */
-.check-icon {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #2563EB;
-    color: white;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    /* Layout Flex para alinhar Texto na Esq. e Preço na Dir. */
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    opacity: 0;
-    transform: scale(0);
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 10;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 70px; /* Garante altura mínima para não espremer */
 }
 
-.barber-card.selected .check-icon {
-    opacity: 1;
-    transform: scale(1);
+.service-card:hover {
+    border-color: #BFDBFE;
+    background-color: #F9FAFB;
 }
 
-.avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    background-color: #E5E7EB;
-    border: 2px solid white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+.service-card.selected {
+    border-color: #2563EB;
+    background-color: #EFF6FF;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+/* Título do Serviço */
+.service-card div:first-child div:first-child {
+    font-size: 15px; /* Um pouco maior */
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+/* Descrição e Tempo */
+.service-card div:first-child div:nth-child(2),
+.service-card div:first-child div:nth-child(3) {
+    font-size: 12px;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+/* Preço */
+.service-card div:last-child {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap; /* Impede que o preço quebre linha */
+    padding-left: 12px; /* Garante separação do texto */
 }
 
 /* Grid de Horários */
