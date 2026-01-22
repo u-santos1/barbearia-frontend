@@ -1,7 +1,3 @@
-### 📂 2. Para o Repositório do FRONTEND (HTML/JS)
-
-Crie um arquivo `README.md` na pasta onde ficam seus arquivos HTML/JS/CSS.
-
 ```markdown
 # ✂️ Barbearia Web (Frontend)
 
@@ -15,7 +11,7 @@ Interface web responsiva para agendamento de serviços de barbearia. O sistema p
 ## 🔗 Links
 
 - **Acessar Site:** [https://barbearia-frontend-rose.vercel.app](https://barbearia-frontend-rose.vercel.app)
-- **Repositório da API:** [https://github.com/u-santos1/barbearia-backend]
+- **Repositório da API:** [Link para o seu GitHub do Backend aqui]
 
 ## 📱 Funcionalidades
 
