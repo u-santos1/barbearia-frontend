@@ -254,29 +254,24 @@ async function carregarDadosIniciais() {
             const foto = fotosMock[index % fotosMock.length];
 
             // DENTRO DO FOREACH DOS BARBEIROS:
-                        const div = document.createElement('div');
-                        div.className = 'barber-card';
+                       const div = document.createElement('div');
+                                   div.className = 'barber-card';
 
-                        // Adicionei a div class="check-icon" no começo
-                        div.innerHTML = `
-                            <div class="check-icon"><span class="material-icons-round" style="font-size:16px">check</span></div>
+                                   // HTML NOVO (Estilo Stories: Só Foto, Check e Nome)
+                                   div.innerHTML = `
+                                       <div class="check-icon"><span class="material-icons-round">check</span></div>
+                                       <div class="avatar" style="background-image: url('${foto}')"></div>
+                                       <span class="barber-name">${b.nome.split(' ')[0]}</span>
+                                   `;
 
-                            <div class="avatar" style="background-image: url('${foto}')"></div>
-
-                            <div style="text-align:center">
-                                <span style="font-size:13px; font-weight:700; display:block; color:var(--text-main); margin-bottom:2px;">
-                                    ${b.nome.split(' ')[0]}
-                                </span>
-                                <span style="font-size:11px; color:var(--text-sec); display:block;">
-                                    ${b.especialidade || 'Barbeiro'}
-                                </span>
-
-                                <div style="display:flex; align-items:center; justify-content:center; gap:2px; margin-top:6px; background:#FEF3C7; padding:2px 8px; border-radius:10px; width:fit-content; margin-left:auto; margin-right:auto;">
-                                    <span class="material-icons-round" style="font-size:10px; color:#F59E0B;">star</span>
-                                    <span style="font-size:10px; font-weight:700; color:#92400E;">${nota}</span>
-                                </div>
-                            </div>
-                        `;
+                                   // Mantém a lógica de clique igual
+                                   div.onclick = () => {
+                                       state.barbeiroId = b.id;
+                                       document.querySelectorAll('.barber-card').forEach(e => e.classList.remove('selected'));
+                                       div.classList.add('selected');
+                                       carregarHorarios();
+                                   };
+                                   lista.appendChild(div);
             div.onclick = () => {
                 state.barbeiroId = b.id;
                 document.querySelectorAll('.barber-card').forEach(e => e.classList.remove('selected'));
