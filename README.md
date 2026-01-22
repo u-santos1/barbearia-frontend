@@ -77,9 +77,3 @@ Se você quiser testar este frontend no seu computador:
 3.  **Execute:**
     Basta abrir o arquivo `index.html` no seu navegador ou usar uma extensão como **Live Server** no VS Code.
 
----
-
-## 👨‍💻 Autor
-
-Desenvolvido por **[Seu Nome]**.
-Projeto Full Stack para portfólio.
