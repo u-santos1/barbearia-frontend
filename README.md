@@ -51,15 +51,6 @@ O frontend foi desenvolvido com foco em usabilidade (UX) e performance. Não uti
     - `Cancelar`: Libera a agenda para outro cliente.
 3.  **Gestão de Equipe e Serviços:** Adicionar ou remover barbeiros e preços dinamicamente.
 
----
-
-## 📸 Screenshots
-
-| Área do Cliente | Dashboard Admin |
-|:---:|:---:|
-| *(Coloque um print da tela de agendamento aqui)* | *(Coloque um print do gráfico/lista aqui)* |
-
----
 
 ## ⚙️ Como rodar localmente
 
