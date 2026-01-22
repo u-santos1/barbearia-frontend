@@ -701,6 +701,7 @@ async function cancelarAgendamento(id) {
     } else {
         abrirMeusAgendamentos();
     }
+   }
 
     // --- AÇÕES DO ADMIN (BOTOES) ---
 
@@ -767,4 +768,4 @@ async function cancelarAgendamento(id) {
             finally { hideLoading(); }
         }
     }
-}
+
