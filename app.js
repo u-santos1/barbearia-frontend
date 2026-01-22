@@ -253,19 +253,30 @@ async function carregarDadosIniciais() {
             const avaliacoes = Math.floor(Math.random() * 100) + 20;
             const foto = fotosMock[index % fotosMock.length];
 
-            const div = document.createElement('div');
-            div.className = 'barber-card';
-            div.innerHTML = `
-                <div class="avatar" style="background-image: url('${foto}')"></div>
-                <div style="text-align:center">
-                    <span style="font-size:12px; font-weight:600; display:block; color:var(--text-main);">${b.nome.split(' ')[0]}</span>
-                    <div style="display:flex; align-items:center; justify-content:center; gap:2px; margin-top:2px;">
-                        <span class="material-icons-round" style="font-size:10px; color:#F59E0B;">star</span>
-                        <span style="font-size:10px; font-weight:700; color:var(--text-main);">${nota}</span>
-                        <span style="font-size:9px; color:#9CA3AF;">(${avaliacoes})</span>
-                    </div>
-                </div>
-            `;
+            // DENTRO DO FOREACH DOS BARBEIROS:
+                        const div = document.createElement('div');
+                        div.className = 'barber-card';
+
+                        // Adicionei a div class="check-icon" no começo
+                        div.innerHTML = `
+                            <div class="check-icon"><span class="material-icons-round" style="font-size:16px">check</span></div>
+
+                            <div class="avatar" style="background-image: url('${foto}')"></div>
+
+                            <div style="text-align:center">
+                                <span style="font-size:13px; font-weight:700; display:block; color:var(--text-main); margin-bottom:2px;">
+                                    ${b.nome.split(' ')[0]}
+                                </span>
+                                <span style="font-size:11px; color:var(--text-sec); display:block;">
+                                    ${b.especialidade || 'Barbeiro'}
+                                </span>
+
+                                <div style="display:flex; align-items:center; justify-content:center; gap:2px; margin-top:6px; background:#FEF3C7; padding:2px 8px; border-radius:10px; width:fit-content; margin-left:auto; margin-right:auto;">
+                                    <span class="material-icons-round" style="font-size:10px; color:#F59E0B;">star</span>
+                                    <span style="font-size:10px; font-weight:700; color:#92400E;">${nota}</span>
+                                </div>
+                            </div>
+                        `;
             div.onclick = () => {
                 state.barbeiroId = b.id;
                 document.querySelectorAll('.barber-card').forEach(e => e.classList.remove('selected'));
