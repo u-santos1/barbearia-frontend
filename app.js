@@ -110,8 +110,6 @@ async function fetchAdmin(endpoint, options = {}) {
 // 3. LOGIN E CADASTRO
 // ==================================================
 
-// LOGIN COM JWT (Atualizado)
-// Substitua a função fazerLogin antiga por esta:
 async function fazerLogin() {
     const email = document.getElementById('loginUser').value.trim();
     const senha = document.getElementById('loginSenha').value;
@@ -121,7 +119,7 @@ async function fazerLogin() {
     showLoading();
 
     try {
-        console.log("Tentando logar em:", `${API_URL}/auth/login`); // Debug
+        console.log("Conectando em:", `${API_URL}/auth/login`);
 
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
@@ -129,39 +127,37 @@ async function fazerLogin() {
             body: JSON.stringify({ email: email, senha: senha })
         });
 
-        // Debug: Mostra o status da resposta (200 = OK, 403 = Proibido, 404 = Não achou)
-        console.log("Status da resposta:", response.status);
+        // Se o servidor devolver 404 ou 500, lemos como texto para não quebrar o JSON
+        if (!response.ok) {
+            const erroTexto = await response.text();
+            console.error("Erro do Servidor:", response.status, erroTexto);
+            hideLoading();
 
-        if (response.ok) {
-            const data = await response.json();
-
-            // Verifica se o token veio mesmo
-            if (!data.token) {
-                throw new Error("O servidor respondeu, mas não enviou o token.");
+            if(response.status === 404) {
+                 return Swal.fire('Erro 404', 'O servidor ainda não tem a rota de login. Se estiver usando o Railway, o deploy ainda não terminou.', 'error');
             }
 
-            state.token = "Bearer " + data.token;
-            state.donoNome = data.nome;
-
-            hideLoading();
-
-            document.getElementById('welcome-msg').innerText = `Olá, ${data.nome}`;
-            carregarAdmin();
-
-            const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000});
-            Toast.fire({icon: 'success', title: 'Login realizado!'});
-
-        } else {
-            // Se der erro, tenta ler a mensagem de erro do Java
-            const erroTexto = await response.text();
-            console.error("Erro do servidor:", erroTexto);
-            hideLoading();
-            Swal.fire('Erro no Login', erroTexto || 'Usuário ou senha inválidos', 'error');
+            return Swal.fire('Erro', 'Falha no login. Verifique o console (F12).', 'error');
         }
+
+        // Se chegou aqui, é sucesso e é JSON
+        const data = await response.json();
+
+        state.token = "Bearer " + data.token;
+        state.donoNome = data.nome;
+
+        hideLoading();
+
+        document.getElementById('welcome-msg').innerText = `Olá, ${data.nome}`;
+        carregarAdmin();
+
+        const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000});
+        Toast.fire({icon: 'success', title: 'Login realizado!'});
+
     } catch (e) {
         hideLoading();
-        console.error("Erro CRÍTICO no JS:", e); // Veja isso no Console do Chrome (F12)
-        Swal.fire('Erro Técnico', 'Verifique o console (F12) para detalhes.', 'error');
+        console.error("Erro de conexão:", e);
+        Swal.fire('Erro', 'O backend parece desligado ou inacessível.', 'error');
     }
 }
 
