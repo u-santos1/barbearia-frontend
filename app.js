@@ -111,6 +111,7 @@ async function fetchAdmin(endpoint, options = {}) {
 // ==================================================
 
 // LOGIN COM JWT (Atualizado)
+// Substitua a função fazerLogin antiga por esta:
 async function fazerLogin() {
     const email = document.getElementById('loginUser').value.trim();
     const senha = document.getElementById('loginSenha').value;
@@ -120,37 +121,47 @@ async function fazerLogin() {
     showLoading();
 
     try {
-        // Chama o endpoint de autenticação do Java
+        console.log("Tentando logar em:", `${API_URL}/auth/login`); // Debug
+
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, senha: senha })
         });
 
+        // Debug: Mostra o status da resposta (200 = OK, 403 = Proibido, 404 = Não achou)
+        console.log("Status da resposta:", response.status);
+
         if (response.ok) {
             const data = await response.json();
 
-            // Salva o Token JWT e dados do usuário
-            state.token = "Bearer " + data.token; // Importante: Adiciona o Bearer
+            // Verifica se o token veio mesmo
+            if (!data.token) {
+                throw new Error("O servidor respondeu, mas não enviou o token.");
+            }
+
+            state.token = "Bearer " + data.token;
             state.donoNome = data.nome;
 
             hideLoading();
 
-            // Atualiza UI e entra
             document.getElementById('welcome-msg').innerText = `Olá, ${data.nome}`;
-            carregarAdmin(); // Carrega o dashboard
+            carregarAdmin();
 
             const Toast = Swal.mixin({toast: true, position: 'top-end', showConfirmButton: false, timer: 3000});
             Toast.fire({icon: 'success', title: 'Login realizado!'});
 
         } else {
+            // Se der erro, tenta ler a mensagem de erro do Java
+            const erroTexto = await response.text();
+            console.error("Erro do servidor:", erroTexto);
             hideLoading();
-            Swal.fire('Erro', 'Usuário ou senha inválidos', 'error');
+            Swal.fire('Erro no Login', erroTexto || 'Usuário ou senha inválidos', 'error');
         }
     } catch (e) {
         hideLoading();
-        console.error(e);
-        Swal.fire('Erro', 'Falha na conexão com o servidor', 'error');
+        console.error("Erro CRÍTICO no JS:", e); // Veja isso no Console do Chrome (F12)
+        Swal.fire('Erro Técnico', 'Verifique o console (F12) para detalhes.', 'error');
     }
 }
 
