@@ -1,185 +1,129 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4F46E5">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Barbearia SaaS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Barbearia Admin</title>
 
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
-  <div style="width: 40px; height: 40px; border: 4px solid #E5E7EB; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-  <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    <div style="width: 40px; height: 40px; border: 4px solid #E5E7EB; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 </div>
 
 <div id="app">
 
-  <div id="screen-login" class="screen active">
+    <div id="screen-login" class="screen active">
 
-    <div style="text-align: center; margin-top: 60px; margin-bottom: 50px;">
-      <div style="width: 80px; height: 80px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
-        <span class="material-icons-round" style="font-size: 40px; color: var(--primary);">content_cut</span>
-      </div>
-      <h1>Barbearia App</h1>
-      <p>Gerencie seu estilo</p>
+        <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
+            <div style="width: 80px; height: 80px; background: #E0E7FF; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <span class="material-icons-round" style="font-size: 40px; color: var(--primary);">admin_panel_settings</span>
+            </div>
+            <h1 style="font-size: 24px; font-weight: 700;">Barber Pro</h1>
+            <p style="color: var(--text-sec); font-size: 14px;">Gestão para Profissionais</p>
+        </div>
+
+        <div class="input-group">
+            <label>E-mail (Login)</label>
+            <input type="email" id="loginUser" placeholder="seu@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="loginSenha" placeholder="Sua senha secreta">
+        </div>
+
+        <div style="text-align: right; margin-bottom: 24px;">
+            <a href="#" style="color: var(--text-sec); font-size: 13px; font-weight: 500;">Esqueceu a senha?</a>
+        </div>
+
+        <button class="btn-primary" onclick="fazerLogin()">
+            Entrar no Painel
+        </button>
+
+        <button onclick="irParaCadastro()" style="background: transparent; border: 1px solid #E5E7EB; color: var(--text-main); width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; margin-top: 16px; cursor: pointer; transition: 0.2s;">
+            Criar conta profissional
+        </button>
+
     </div>
 
-    <div class="input-group">
-      <label>ID de Acesso</label>
-      <input type="text" id="loginId" placeholder="Seu ID ou 'admin'">
+
+    <div id="screen-register-owner" class="screen">
+
+        <button onclick="voltarParaLogin()" style="background: none; border: none; color: var(--text-sec); font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 20px; cursor: pointer;">
+            <span class="material-icons-round">arrow_back</span> Voltar
+        </button>
+
+        <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 10px;">Junte-se a nós</h1>
+        <p style="color: var(--text-sec); font-size: 14px; margin-bottom: 30px;">Crie sua conta para gerenciar seus agendamentos.</p>
+
+        <div class="input-group">
+            <label>Nome Completo</label>
+            <input type="text" id="regNome" placeholder="Ex: Wesley Silva">
+        </div>
+
+        <div class="input-group">
+            <label>Nome da Barbearia (Opcional)</label>
+            <input type="text" id="regShop" placeholder="Ex: Wesley Barber Shop">
+        </div>
+
+        <div class="input-group">
+            <label>E-mail (Será seu Login)</label>
+            <input type="email" id="regEmail" placeholder="exemplo@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>Criar Senha</label>
+            <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres">
+        </div>
+
+        <div class="input-group">
+            <label>Confirmar Senha</label>
+            <input type="password" id="regSenhaConfirm" placeholder="Repita a senha">
+        </div>
+
+        <button class="btn-primary" onclick="cadastrarNovoDono()">
+            Finalizar Cadastro
+        </button>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-sec);">
+            Ao criar conta, você concorda com os Termos de Uso.
+        </p>
     </div>
 
-    <div style="text-align: right; margin-bottom: 24px;">
-      <a href="#" onclick="recuperarId()" style="color: var(--text-sec); font-size: 13px; font-weight: 500; text-decoration: none;">
-        Esqueceu o ID?
-      </a>
+
+    <div id="screen-admin" class="screen">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div>
+                <h1 style="margin:0; font-size:20px;">Gestão</h1>
+                <p id="welcome-msg" style="margin:0; font-size:12px; color:var(--text-sec);">Bem-vindo</p>
+            </div>
+            <button onclick="logout()" style="background:#FEE2E2; color:#991B1B; border:none; padding:8px; border-radius:8px; cursor:pointer;">
+                <span class="material-icons-round">logout</span>
+            </button>
+        </div>
+
+        <div id="admin-content"></div>
+
+        <div class="admin-bottom-nav">
+            <button class="nav-item active" onclick="navegarAdmin('dashboard')"><span class="material-icons-round">analytics</span><span>Visão</span></button>
+            <button class="nav-item" onclick="navegarAdmin('agenda')"><span class="material-icons-round">calendar_today</span><span>Agenda</span></button>
+            <button class="nav-item" onclick="navegarAdmin('servicos')"><span class="material-icons-round">content_cut</span><span>Serviços</span></button>
+            <button class="nav-item" onclick="navegarAdmin('equipe')"><span class="material-icons-round">groups</span><span>Equipe</span></button>
+        </div>
     </div>
 
-    <button class="btn-primary" onclick="fazerLogin()">
-      Entrar <span class="material-icons-round" style="font-size: 18px;">arrow_forward</span>
-    </button>
-
-    <button class="btn-secondary" onclick="navegarPara('screen-register')">
-      Criar nova conta
-    </button>
-
-  </div>
-
-  <div id="screen-register" class="screen">
-    <button class="btn-outline" style="width: auto; padding: 8px 16px; border-radius: 8px; border-style: solid; margin-bottom: 30px;" onclick="navegarPara('screen-login')">
-      <span class="material-icons-round" style="font-size: 18px;">arrow_back</span> Voltar
-    </button>
-
-    <h1>Criar Conta</h1>
-    <p>Preencha seus dados para começar.</p>
-
-    <div class="input-group">
-      <label>Nome Completo</label>
-      <input type="text" id="regNome" placeholder="Ex: João Silva">
-    </div>
-    <div class="input-group">
-      <label>E-mail</label>
-      <input type="email" id="regEmail" placeholder="seu@email.com">
-    </div>
-    <div class="input-group">
-      <label>Celular</label>
-      <input type="text" id="regTelefone" placeholder="(00) 00000-0000">
-    </div>
-
-    <button class="btn-primary" style="margin-top: 20px;" onclick="cadastrarCliente()">
-      Confirmar Cadastro
-    </button>
-  </div>
-
-  <div id="screen-booking" class="screen">
-
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <div>
-        <h1 style="font-size: 20px; margin: 0;">Novo Agendamento</h1>
-        <p style="margin: 0; font-size: 13px;">Olá, <span id="user-name-display" style="color: var(--primary); font-weight: 600;">Cliente</span></p>
-      </div>
-      <button onclick="logout()" style="border: none; background: #FEE2E2; color: #991B1B; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-        <span class="material-icons-round" style="font-size: 20px;">logout</span>
-      </button>
-    </div>
-
-    <div onclick="abrirMeusAgendamentos()" class="action-card">
-      <div class="icon-box">
-        <span class="material-icons-round" style="font-size: 24px;">event_note</span>
-      </div>
-      <div style="flex: 1;">
-        <strong>Meus Agendamentos</strong>
-        <p>Ver histórico ou cancelar horários</p>
-      </div>
-      <span class="material-icons-round" style="color: #D1D5DB;">chevron_right</span>
-    </div>
-
-    <div id="booking-error" class="error-msg"></div>
-
-    <h2>1. Profissional</h2>
-    <div class="barber-list" id="list-barbers">
-      <p style="font-size: 13px; color: var(--text-sec); width: 100%; text-align: center;">Carregando...</p>
-    </div>
-
-    <h2>2. Serviço</h2>
-    <div id="list-services">
-      <p style="font-size: 13px; color: var(--text-sec); padding: 10px; background: var(--bg); border-radius: 8px; text-align: center;">Selecione um profissional acima.</p>
-    </div>
-
-    <h2>3. Data</h2>
-    <div class="input-group">
-      <input type="date" id="date-picker">
-    </div>
-
-    <h2>4. Horário</h2>
-    <div class="time-grid" id="grid-times">
-      <div style="grid-column: span 4; padding: 20px; text-align: center; color: var(--text-sec); background: var(--bg); border-radius: 12px; border: 1px dashed var(--border);">
-        Selecione uma data para ver horários
-      </div>
-    </div>
-
-  </div>
-
-  <div id="screen-admin" class="screen">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <div>
-        <h1 style="margin:0; font-size:20px;">Gestão</h1>
-        <p style="margin:0; font-size:12px; color:var(--text-sec);">Bem-vindo, Chefe 💈</p>
-      </div>
-      <button onclick="logout()" style="background:#FEE2E2; color:#991B1B; border:none; padding:8px; border-radius:8px; cursor:pointer;">
-        <span class="material-icons-round">logout</span>
-      </button>
-    </div>
-
-    <div id="admin-content">
-    </div>
-
-    <div class="admin-bottom-nav">
-      <button class="nav-item active" onclick="navegarAdmin('dashboard')">
-        <span class="material-icons-round">analytics</span>
-        <span>Visão</span>
-      </button>
-      <button class="nav-item" onclick="navegarAdmin('agenda')">
-        <span class="material-icons-round">calendar_today</span>
-        <span>Agenda</span>
-      </button>
-      <button class="nav-item" onclick="navegarAdmin('servicos')">
-        <span class="material-icons-round">content_cut</span>
-        <span>Serviços</span>
-      </button>
-      <button class="nav-item" onclick="navegarAdmin('equipe')">
-        <span class="material-icons-round">groups</span>
-        <span>Equipe</span>
-      </button>
-    </div>
-  </div>
-
-  <div id="screen-success" class="screen" style="text-align: center; padding-top: 100px;">
-    <div style="width: 100px; height: 100px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto;">
-      <span class="material-icons-round" style="font-size: 50px; color: #059669;">check</span>
-    </div>
-    <h1 style="margin-bottom: 10px;">Agendado!</h1>
-    <p>Seu horário foi confirmado com sucesso.</p>
-    <button class="btn-outline" style="width: 200px; margin: 20px auto;" onclick="location.reload()">Voltar ao Início</button>
-  </div>
-
-  <div id="booking-footer" class="bottom-bar" style="display: none;">
-    <div>
-      <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--text-sec); letter-spacing: 0.5px;">Total</span>
-      <div class="price-total" id="total-price">R$ 0,00</div>
-    </div>
-    <button class="btn-primary" style="width: auto; padding: 12px 24px; box-shadow: var(--shadow-md);" onclick="confirmarAgendamento()">
-      Confirmar <span class="material-icons-round" style="font-size: 18px;">check</span>
-    </button>
-  </div>
+    <div id="screen-booking" class="screen"> ... (Código do booking anterior) ... </div>
+    <div id="screen-success" class="screen"> ... (Código de sucesso anterior) ... </div>
 
 </div>
 
@@ -188,10 +132,25 @@
 <script src="app.js"></script>
 
 <script>
-  function atualizarAbaAtiva(botao) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      botao.classList.add('active');
-  }
+    function entrarComoDono() {
+        const senha = document.getElementById('loginSenha').value;
+
+        // Validação simples (Pode remover o if se quiser aceitar qualquer coisa no teste)
+        if(senha.trim() !== "") {
+            document.getElementById('screen-login').classList.remove('active');
+            document.getElementById('screen-admin').classList.add('active');
+        } else {
+            alert("Por favor, digite a senha de acesso.");
+        }
+    }
+
+    function logout() {
+        // Esconde todas as telas
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        // Mostra login
+        document.getElementById('screen-login').classList.add('active');
+        document.getElementById('loginSenha').value = '';
+    }
 </script>
 
 </body>

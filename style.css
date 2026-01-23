@@ -4,12 +4,12 @@
 :root {
   /* Cores Principais (Indigo Moderno) */
   --primary: #4F46E5;
-  --primary-light: #EEF2FF; /* Fundo suave para seleção */
+  --primary-light: #EEF2FF;
   --primary-hover: #4338CA;
 
   /* Superfícies */
-  --bg: #F9FAFB;            /* Fundo da página (Cinza muito claro) */
-  --surface: #FFFFFF;       /* Fundo dos Cards (Branco Puro) */
+  --bg: #F9FAFB;            /* Fundo da página */
+  --surface: #FFFFFF;       /* Fundo dos Cards */
 
   /* Tipografia */
   --text-main: #111827;
@@ -21,8 +21,11 @@
 
   /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Gradientes SaaS */
+  --gradient-share: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%);
 }
 
 /* =========================================
@@ -33,8 +36,7 @@
 body {
   background-color: var(--bg);
   color: var(--text-main);
-  display: flex;
-  justify-content: center;
+  display: flex; justify-content: center;
   min-height: 100vh;
   padding: 0;
 }
@@ -44,7 +46,7 @@ body {
    ========================================= */
 #app {
   width: 100%;
-  max-width: 500px; /* Mais estreito para parecer app nativo */
+  max-width: 500px;
   background: var(--bg);
   min-height: 100vh;
   position: relative;
@@ -52,11 +54,10 @@ body {
   box-shadow: none;
 }
 
-/* Desktop: Centralizado e Flutuante */
+/* Desktop: Centralizado */
 @media(min-width: 600px) {
   #app {
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 40px; margin-bottom: 40px;
     border-radius: 24px;
     height: calc(100vh - 80px);
     overflow-y: auto;
@@ -65,7 +66,6 @@ body {
     box-shadow: var(--shadow-lg);
   }
   body { align-items: flex-start; }
-  /* Scrollbar fina */
   #app::-webkit-scrollbar { width: 6px; }
   #app::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 10px; }
 }
@@ -87,10 +87,8 @@ input, select {
   width: 100%; padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  font-size: 15px;
-  outline: none;
-  background: var(--surface);
-  color: var(--text-main);
+  font-size: 15px; outline: none;
+  background: var(--surface); color: var(--text-main);
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
 }
@@ -101,305 +99,202 @@ input:focus, select:focus {
 }
 
 /* =========================================
-   6. BOTÕES (Gerais)
+   6. BOTÕES
    ========================================= */
 .btn, .btn-primary, .btn-secondary, .btn-outline {
   width: 100%; padding: 14px; border: none; border-radius: 12px;
   font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
-  display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn:active, .btn-primary:active { transform: scale(0.98); }
 
-.btn-primary {
-  background: var(--primary); color: white;
-  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
-}
-.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); }
+.btn-primary:hover { background: var(--primary-hover); }
 
-.btn-secondary { background: white; border: 1px solid var(--border); color: var(--text-main); margin-top: 12px; box-shadow: var(--shadow-sm); }
-.btn-secondary:hover { background: #F9FAFB; border-color: #D1D5DB; }
-
+.btn-secondary { background: white; border: 1px solid var(--border); color: var(--text-main); margin-top: 12px; }
 .btn-outline { background: transparent; border: 1px dashed var(--border); color: var(--text-sec); }
-.btn-outline:hover { border-style: solid; color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
 /* =========================================
-   7. LISTA DE BARBEIROS (ESTILO STORIES)
+   7. ELEMENTOS DE LISTA (Barbeiros & Serviços)
    ========================================= */
+/* Lista Horizontal (Stories) */
 #list-barbers {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 10px 0 20px 0;
-    overflow-x: auto;
+    display: flex; justify-content: center; gap: 20px;
+    padding: 10px 0 20px 0; overflow-x: auto;
 }
-
-/* Container Transparente */
 .barber-card {
-    background: transparent;
-    border: none;
-    padding: 0;
-    width: 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.2s;
+    background: transparent; border: none; padding: 0; width: 80px;
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer; position: relative; transition: transform 0.2s;
 }
 .barber-card:active { transform: scale(0.95); }
 
-/* A Foto Redonda */
 .avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    background-color: #E5E7EB;
-    border: 3px solid #E5E7EB; /* Borda inativa */
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    width: 70px; height: 70px; border-radius: 50%;
+    background-size: cover; background-position: center; background-color: #E5E7EB;
+    border: 3px solid #E5E7EB; transition: all 0.3s;
+    display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: #9CA3AF;
 }
+.barber-card.selected .avatar { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2); color: var(--primary); }
 
-/* Efeito Selecionado */
-.barber-card.selected .avatar {
-    border-color: #2563EB;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
-}
+.barber-name { margin-top: 8px; font-size: 13px; font-weight: 600; color: #4B5563; text-align: center; }
+.barber-card.selected .barber-name { color: var(--primary); font-weight: 700; }
 
-/* Nome */
-.barber-name {
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #4B5563;
-    text-align: center;
-}
-.barber-card.selected .barber-name { color: #2563EB; font-weight: 700; }
-
-/* Ícone Check */
 .check-icon {
-    position: absolute;
-    top: 0; right: 0;
-    background: #2563EB; color: white;
-    width: 22px; height: 22px;
-    border-radius: 50%; border: 2px solid white;
+    position: absolute; top: 0; right: 0;
+    background: var(--primary); color: white;
+    width: 22px; height: 22px; border-radius: 50%; border: 2px solid white;
     display: flex; align-items: center; justify-content: center;
-    opacity: 0; transform: scale(0);
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 10;
+    opacity: 0; transform: scale(0); transition: all 0.2s;
 }
-.check-icon span { font-size: 14px; font-weight: bold; }
 .barber-card.selected .check-icon { opacity: 1; transform: scale(1); }
 
-
-/* =========================================
-   8. LISTA DE SERVIÇOS
-   ========================================= */
-#list-services {
-    display: flex; flex-direction: column; gap: 10px;
-    padding-bottom: 20px;
-}
-
+/* Lista Vertical (Serviços) */
+#list-services { display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
 .service-card {
-    background: white;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
+    background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
-    cursor: pointer; transition: all 0.2s ease;
-    min-height: 70px;
+    cursor: pointer; transition: all 0.2s ease; min-height: 70px;
 }
 .service-card:hover { border-color: #BFDBFE; background-color: #F9FAFB; }
-.service-card.selected { border-color: #2563EB; background-color: #EFF6FF; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); }
+.service-card.selected { border-color: var(--primary); background-color: var(--primary-light); }
 
-/* Textos do Serviço */
-.service-card div:first-child div:first-child { font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px; }
-.service-card div:first-child div:nth-child(2),
-.service-card div:first-child div:nth-child(3) { font-size: 12px; color: #6B7280; line-height: 1.4; }
-.service-card div:last-child { font-size: 15px; font-weight: 700; color: #111827; white-space: nowrap; padding-left: 12px; }
-
-
-/* =========================================
-   9. GRID DE HORÁRIOS
-   ========================================= */
+/* Grid de Horários */
 .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-
 .time-slot {
-  padding: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  text-align: center; font-size: 13px; font-weight: 500; color: var(--text-main);
+  padding: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; text-align: center; font-size: 13px; font-weight: 500;
   cursor: pointer; transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
 }
-.time-slot:hover { border-color: var(--primary); color: var(--primary); }
-.time-slot.selected {
-  background: var(--primary); color: white; border-color: var(--primary);
-  box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
-}
-.time-slot.disabled {
-  background: #F3F4F6; color: #D1D5DB; border-color: transparent;
-  box-shadow: none; text-decoration: line-through; pointer-events: none;
-}
-
+.time-slot.selected { background: var(--primary); color: white; border-color: var(--primary); }
+.time-slot.disabled { background: #F3F4F6; color: #D1D5DB; pointer-events: none; text-decoration: line-through; }
 
 /* =========================================
-   10. CARD DE AÇÃO (MEUS AGENDAMENTOS)
+   8. CARD DE AÇÃO & CLIENTE
    ========================================= */
 .action-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px; margin-bottom: 24px;
-    display: flex; align-items: center; gap: 16px;
-    cursor: pointer; transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px;
+    cursor: pointer; box-shadow: var(--shadow-sm);
 }
-.action-card:active { transform: scale(0.98); background: var(--bg); }
-
 .action-card .icon-box {
-    width: 44px; height: 44px;
-    background: var(--primary-light);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--primary);
+    width: 44px; height: 44px; background: var(--primary-light); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; color: var(--primary);
 }
-.action-card strong { display: block; font-size: 14px; color: var(--text-main); font-weight: 600; }
-.action-card p { margin: 0; font-size: 12px; color: var(--text-sec); }
 
+/* Avatar do Cliente (Header Booking) */
+.avatar-client {
+  width: 80px; height: 80px;
+  background: var(--primary-light); color: var(--primary);
+  border-radius: 24px;
+  margin: 0 auto 16px auto;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 32px;
+  box-shadow: var(--shadow-sm);
+}
 
 /* =========================================
-   11. ADMIN DASHBOARD & CARDS
+   9. ADMIN DASHBOARD & CARDS
    ========================================= */
 .admin-card-item {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    border: 1px solid #F3F4F6;
+    background: white; padding: 15px; border-radius: 12px;
+    margin-bottom: 12px; border: 1px solid #F3F4F6;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    /* Flex Vertical para alinhar botoes em baixo */
     display: flex; flex-direction: column; gap: 10px;
-}
-
-.card-header-row {
-    display: flex; justify-content: space-between; align-items: flex-start; width: 100%;
-}
-
-.actions-row {
-    padding-top: 10px; border-top: 1px solid #F3F4F6;
-    display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap;
 }
 
 /* Badges */
-.badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-right: 6px; letter-spacing: 0.5px; }
+.badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
 .badge-agendado { background: #E0E7FF; color: #3730A3; }
-.badge-confirmado { background: #DBEAFE; color: #1E40AF; border: 1px solid #BFDBFE; }
-.badge-concluido { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+.badge-confirmado { background: #DBEAFE; color: #1E40AF; }
+.badge-concluido { background: #D1FAE5; color: #065F46; }
 .badge-cancelado { background: #FEE2E2; color: #991B1B; }
 
-/* Tabs */
-.tabs-container {
-  background: #F3F4F6; padding: 4px; border-radius: 12px;
-  display: flex; gap: 4px; margin-bottom: 24px;
-}
-.tab-btn {
-  flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
-  color: var(--text-sec); background: transparent; border: none; cursor: pointer; transition: 0.2s;
-}
-.tab-btn:hover { background: rgba(255,255,255,0.5); }
-.tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-
-/* =========================================
-   12. BOTÕES MINI (AÇÕES ADMIN)
-   ========================================= */
+/* Botões Mini */
 .btn-mini {
-    border: none; padding: 4px 10px; border-radius: 4px;
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-    cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
-    width: auto !important; height: 26px; transition: all 0.2s;
+    border: none; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    height: 26px;
 }
-.btn-mini:hover { filter: brightness(0.95); transform: translateY(-1px); }
-.btn-mini .material-icons-round { font-size: 14px !important; }
+.btn-confirm { background: #EFF6FF; color: #1D4ED8; }
+.btn-done { background: #ECFDF5; color: #047857; }
+.btn-cancel { background: #FEF2F2; color: #B91C1C; }
 
-.btn-confirm { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
-.btn-done { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-.btn-cancel { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
-
-
-/* =========================================
-   13. RODAPÉ E ANIMAÇÕES
-   ========================================= */
-.screen { display: none; padding: 24px; padding-bottom: 120px; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-.screen.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.bottom-bar {
-  position: fixed; bottom: 0; width: 100%; max-width: 500px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center; z-index: 100;
-}
-.price-total { font-size: 20px; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
-/* --- ADMIN ESTILO INBARBER --- */
-
-/* Cards de Métricas (Topo) */
-.metrics-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 colunas */
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
+/* Métricas */
+.metrics-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
 .metric-card {
-    background: white;
-    padding: 16px;
-    border-radius: 16px;
-    border: 1px solid #F3F4F6;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    background: white; padding: 16px; border-radius: 16px; border: 1px solid #F3F4F6;
     display: flex; flex-direction: column;
 }
-
 .metric-value { font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px; }
 .metric-label { font-size: 11px; color: var(--text-sec); font-weight: 500; text-transform: uppercase; }
 
-/* Menu Inferior Fixo (Bottom Nav) */
+/* =========================================
+   10. SAAS FEATURES (NOVO)
+   ========================================= */
+/* Card de Compartilhamento Link */
+.share-card {
+    background: var(--gradient-share);
+    color: white; padding: 24px; border-radius: 20px;
+    text-align: center; margin-bottom: 24px;
+    box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+    position: relative; overflow: hidden;
+}
+.share-card::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+.share-card h3 { color: white; margin: 0 0 4px 0; font-size: 18px; }
+.share-card p { color: rgba(255,255,255,0.8); margin-bottom: 16px; font-size: 13px; }
+
+.share-link-box {
+    background: rgba(255, 255, 255, 0.15); border: 1px dashed rgba(255, 255, 255, 0.4);
+    padding: 12px 16px; border-radius: 10px;
+    font-family: 'Courier New', monospace; font-size: 13px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; transition: 0.2s;
+}
+.share-link-box:active { background: rgba(255, 255, 255, 0.3); transform: scale(0.98); }
+
+/* =========================================
+   11. MENU FLUTUANTE & ANIMAÇÕES
+   ========================================= */
+.screen { display: none; padding: 24px; padding-bottom: 120px; animation: fadeIn 0.3s ease-out; width: 100%; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Menu Admin Flutuante */
 .admin-bottom-nav {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
-    background: #111827; /* Preto Profissional */
-    border-radius: 50px; /* Borda bem redonda */
-    display: flex;
-    justify-content: space-around;
-    padding: 12px 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    z-index: 1000;
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    width: auto; min-width: 320px;
+    background: #1F2937; /* Escuro Premium */
+    backdrop-filter: blur(12px);
+    border-radius: 100px;
+    display: flex; justify-content: space-evenly;
+    padding: 14px 24px;
+    box-shadow: 0 15px 30px -5px rgba(0,0,0,0.3);
+    z-index: 1000; border: 1px solid rgba(255,255,255,0.1);
 }
-
 .nav-item {
-    background: none; border: none;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    color: #9CA3AF; /* Cinza apagado */
-    cursor: pointer;
-    transition: all 0.3s;
+    background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    color: #9CA3AF; cursor: pointer; transition: all 0.3s;
 }
+.nav-item span:first-child { font-size: 20px; }
+.nav-item span:last-child { font-size: 9px; font-weight: 600; }
+.nav-item.active { color: white; transform: translateY(-2px); }
+.nav-item.active span:first-child { color: #818CF8; text-shadow: 0 0 10px rgba(129, 140, 248, 0.5); }
 
-.nav-item span:first-child { font-size: 20px; } /* Ícone */
-.nav-item span:last-child { font-size: 9px; font-weight: 600; } /* Texto */
-
-.nav-item.active {
-    color: white; /* Branco acesso */
-    transform: translateY(-2px);
+/* Rodapé Cliente */
+.bottom-bar {
+  position: fixed; bottom: 0; width: 100%; max-width: 500px;
+  background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; z-index: 100;
 }
-.nav-item.active span:first-child { color: #818CF8; } /* Ícone Roxo/Azul */
+.price-total { font-size: 20px; font-weight: 800; color: var(--text-main); }
 
-/* Ajuste para o conteúdo não ficar escondido atrás do menu */
-#admin-content { padding-bottom: 80px; }
+/* Animação Spin (Carregando) */
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }

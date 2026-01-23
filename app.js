@@ -11,6 +11,73 @@ const state = {
     token: null,     // Armazena o token Basic Auth do Admin
     preco: 0
 };
+// --- Elementos Globais ---
+const screenRegister = document.getElementById('screen-register-owner');
+
+// --- NAVEGAÇÃO ---
+function irParaCadastro() {
+    document.getElementById('screen-login').classList.remove('active');
+    screenRegister.classList.add('active');
+}
+
+function voltarParaLogin() {
+    screenRegister.classList.remove('active');
+    document.getElementById('screen-login').classList.add('active');
+}
+
+// --- LÓGICA DE CADASTRO (CONECTADO AO JAVA) ---
+async function cadastrarNovoDono() {
+    const nome = document.getElementById('regNome').value;
+    const email = document.getElementById('regEmail').value;
+    const senha = document.getElementById('regSenha').value;
+    const confirma = document.getElementById('regSenhaConfirm').value;
+    // const shop = document.getElementById('regShop').value; // Pode salvar depois
+
+    // 1. Validações Básicas
+    if (!nome || !email || !senha) {
+        return Swal.fire('Erro', 'Preencha todos os campos obrigatórios.', 'warning');
+    }
+    if (senha !== confirma) {
+        return Swal.fire('Erro', 'As senhas não conferem!', 'error');
+    }
+
+    showLoading();
+
+    try {
+        // 2. Envia para o Backend (Endpoint que você já tem: POST /barbeiros)
+        const response = await fetch(`${API_URL}/barbeiros`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nome: nome,
+                email: email,
+                senha: senha, // Certifique-se que seu DTO Java recebe senha
+                especialidade: 'Dono/Admin' // Define padrão para quem se cadastra aqui
+            })
+        });
+
+        if (response.status === 201) {
+            // Sucesso!
+            hideLoading();
+            Swal.fire({
+                icon: 'success',
+                title: 'Conta Criada!',
+                text: 'Faça login para acessar seu painel.'
+            }).then(() => {
+                voltarParaLogin();
+                // Opcional: Já preencher o email no login
+                document.getElementById('loginUser').value = email;
+            });
+        } else {
+            throw new Error('Erro ao cadastrar');
+        }
+
+    } catch (error) {
+        hideLoading();
+        console.error(error);
+        Swal.fire('Erro', 'Falha ao criar conta. Tente outro email.', 'error');
+    }
+}
 
 // --- FUNÇÕES AUXILIARES DE UI ---
 function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
