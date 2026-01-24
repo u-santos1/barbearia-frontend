@@ -1,0 +1,160 @@
+/* =========================================
+   LOGIN & CADASTRO (Tema Dark Premium)
+   ========================================= */
+
+/* Importa variáveis se necessário, mas herda do style.css se linkado junto */
+:root {
+    --primary: #6366F1;
+    --dark-bg: #0F172A;
+    --dark-card: #1E293B;
+    --text-main: #F8FAFC;
+    --text-sec: #94A3B8;
+}
+
+body#page-login {
+    background-color: var(--dark-bg);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 70%);
+}
+
+/* Link de Voltar (Canto superior esquerdo) */
+.back-link {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    color: var(--text-sec);
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+.back-link:hover { color: var(--primary); }
+
+/* --- CARD DE LOGIN --- */
+.login-container {
+    background-color: var(--dark-card);
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Títulos */
+.login-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    color: white;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-subtitle {
+    color: var(--text-sec);
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* Inputs Estilizados (Dark) */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    color: var(--text-sec);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-group input {
+    width: 100%;
+    background-color: #0b1120; /* Mais escuro que o card */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Botão Principal */
+.btn-full {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Oswald', sans-serif;
+    margin-top: 10px;
+}
+
+.btn-full:hover {
+    background: #4F46E5;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
+}
+
+/* Link Alternar (Criar Conta) */
+.toggle-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.toggle-link:hover { text-decoration: underline; color: white; }
+
+/* Separador */
+.divider {
+    margin: 25px 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+}
+.divider span {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark-card);
+    padding: 0 10px;
+    color: #475569;
+    font-size: 12px;
+}

@@ -1,0 +1,129 @@
+/* =========================================
+   VISUAL PREMIUM - AGENDAMENTO (App Style)
+   ========================================= */
+
+/* Fundo Cinza para contraste */
+body#page-booking {
+    background-color: #F3F4F6;
+}
+
+/* Cabeçalho Dark */
+.booking-header {
+    background: #111827;
+    color: white;
+    padding: 20px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.booking-header h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.booking-header a { color: white; text-decoration: none; margin-right: 15px; font-size: 18px; }
+
+/* Container Principal */
+.booking-container {
+    max-width: 500px; margin: 0 auto; padding: 20px;
+    padding-bottom: 120px; /* Espaço para o footer não cobrir o conteúdo */
+}
+
+/* Títulos das Seções */
+.booking-section-title {
+    font-size: 13px; font-weight: 700; color: #6B7280;
+    margin: 25px 0 10px 5px; text-transform: uppercase; letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 8px;
+}
+.booking-section-title i { color: var(--primary); }
+
+/* --- CARTÕES (Cards) --- */
+.booking-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    margin-bottom: 20px;
+    border: 1px solid white;
+    transition: transform 0.2s;
+}
+
+/* Seletor de Data */
+.date-input-styled {
+    width: 100%; border: none; background: #F9FAFB;
+    padding: 15px; border-radius: 10px;
+    font-size: 16px; font-weight: 600; color: #374151;
+    outline: none; cursor: pointer;
+}
+.date-input-styled:focus { background: #EEF2FF; color: var(--primary); }
+
+/* Barbeiros (Stories) */
+.barber-list-container {
+    display: flex; gap: 15px; overflow-x: auto; padding: 5px 0;
+    scrollbar-width: none; /* Firefox */
+}
+.barber-list-container::-webkit-scrollbar { display: none; } /* Chrome */
+
+.barber-item {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    min-width: 75px; cursor: pointer; opacity: 0.7; transition: 0.3s;
+}
+.barber-avatar {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: #E5E7EB; color: #6B7280;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700;
+    border: 3px solid transparent;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+/* Barbeiro Selecionado */
+.barber-item.selected { opacity: 1; transform: scale(1.05); }
+.barber-item.selected .barber-avatar {
+    border-color: var(--primary); background: white; color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+}
+.barber-item.selected .barber-name { color: var(--primary); font-weight: 700; }
+.barber-name { font-size: 12px; font-weight: 500; color: #4B5563; }
+
+/* Serviços (Lista Limpa) */
+.service-list-container { display: flex; flex-direction: column; gap: 12px; }
+.service-item-modern {
+    background: #F9FAFB; border: 1px solid transparent; border-radius: 12px;
+    padding: 15px; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; transition: 0.2s;
+}
+.service-item-modern:hover { background: #EEF2FF; }
+
+/* Serviço Selecionado */
+.service-item-modern.selected {
+    background: white; border-color: var(--primary);
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.15); transform: translateY(-2px);
+}
+.service-item-modern.selected .service-price-tag { color: var(--primary); transform: scale(1.1); }
+.service-info h4 { margin: 0; font-size: 15px; color: #1F2937; }
+.service-info p { margin: 4px 0 0 0; font-size: 12px; color: #9CA3AF; display: flex; align-items: center; gap: 4px; }
+.service-price-tag { font-weight: 700; color: var(--primary); font-size: 15px; transition: 0.2s; }
+
+/* Horários (Chips) */
+.time-grid-modern { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.time-chip {
+    background: #F3F4F6; border-radius: 8px; border: 1px solid transparent;
+    padding: 12px 0; text-align: center; font-size: 14px; font-weight: 600; color: #4B5563;
+    cursor: pointer; transition: 0.2s;
+}
+.time-chip:hover { background: #E5E7EB; }
+.time-chip.selected {
+    background: var(--primary); color: white;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4); transform: translateY(-2px);
+}
+.time-chip.disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+
+/* Footer Fixo Flutuante */
+.booking-footer-modern {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 460px;
+    background: #1F2937; color: white;
+    padding: 15px 25px; border-radius: 50px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 999;
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
+
+.total-label { font-size: 11px; opacity: 0.7; text-transform: uppercase; }
+.total-value { font-size: 18px; font-weight: 700; color: #A7F3D0; }

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Horário</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/booking.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body id="page-booking">
+
+<div id="loading-overlay">
+    <div style="color:var(--primary); font-weight:bold;">Carregando...</div>
+</div>
+
+<div class="booking-header">
+    <div style="max-width: 500px; margin: 0 auto; display: flex; align-items: center;">
+        <a href="index.html"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h2 style="font-size: 16px;">Novo Agendamento</h2>
+            <small style="opacity: 0.7; font-size: 12px; font-weight: 400;">Passo a passo</small>
+        </div>
+    </div>
+</div>
+
+<div class="booking-container">
+
+    <div class="booking-section-title"><i class="far fa-calendar-alt"></i> Escolha a Data</div>
+    <div class="booking-card">
+        <input type="date" id="date-picker" class="date-input-styled">
+    </div>
+
+    <div class="booking-section-title"><i class="far fa-user"></i> Profissional</div>
+    <div class="booking-card" style="padding-bottom: 10px;">
+        <div id="list-barbers" class="barber-list-container">
+            <p style="color:#999; font-size:13px; padding:10px;">Carregando...</p>
+        </div>
+    </div>
+
+    <div class="booking-section-title"><i class="fas fa-cut"></i> Serviço</div>
+    <div class="booking-card">
+        <div id="list-services" class="service-list-container">
+        </div>
+    </div>
+
+    <div class="booking-section-title"><i class="far fa-clock"></i> Horário</div>
+    <div class="booking-card">
+        <div id="grid-times" class="time-grid-modern">
+            <p style="grid-column: span 4; text-align:center; color:#9CA3AF; font-size: 13px;">
+                Selecione data e profissional primeiro.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<div id="booking-footer" class="booking-footer-modern" style="display: none;">
+    <div>
+        <div class="total-label">Valor Total</div>
+        <div id="total-price" class="total-value">R$ 0,00</div>
+    </div>
+    <button class="btn-primary" onclick="confirmarAgendamento()" style="width: auto; padding: 10px 25px; border-radius: 30px; background: white; color: #1F2937; font-weight: 800;">
+        Agendar <i class="fas fa-arrow-right" style="margin-left:5px;"></i>
+    </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/utils.js"></script>
+<script src="js/booking.js"></script>
+
+</body>
+</html>

@@ -1,137 +1,108 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4F46E5">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Barbearia Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barber Pro - Estilo & Tradição</title>
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body id="page-home">
 
-<div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
-    <div style="width: 40px; height: 40px; border: 4px solid #E5E7EB; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-</div>
+<header class="header">
+    <div class="container">
+        <a href="index.html" class="logo">
+            <i class="fas fa-cut"></i> <span>Barber</span>Pro
+        </a>
 
-<div id="app">
+        <ul class="nav-menu" id="home-menu">
+            <li><a href="#">Início</a></li>
+            <li><a href="#sobre">A Barbearia</a></li>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="agendamento.html" class="btn-agendar">Agendar Horário</a></li>
+            <li><a href="login.html" class="btn-login"><i class="fas fa-user-lock"></i></a></li>
+        </ul>
 
-    <div id="screen-login" class="screen active">
+        <div class="hamburger" onclick="toggleHomeMenu()"><i class="fas fa-bars"></i></div>
+    </div>
+</header>
 
-        <div style="text-align: center; margin-top: 60px; margin-bottom: 40px;">
-            <div style="width: 80px; height: 80px; background: #E0E7FF; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
-                <span class="material-icons-round" style="font-size: 40px; color: var(--primary);">admin_panel_settings</span>
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <span class="badge-hero">Estilo & Tradição</span>
+        <h1>Cuidamos do seu visual <br>com <span>Excelência</span></h1>
+        <p>Os melhores profissionais, ambiente climatizado e aquela cerveja gelada esperando por você.</p>
+        <div class="hero-buttons">
+            <a href="agendamento.html" class="btn-primary">Agendar Agora</a>
+            <a href="#servicos" class="btn-outline">Ver Tabela</a>
+        </div>
+    </div>
+</section>
+
+<section id="sobre" class="features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-certificate"></i>
+                <h3>Profissionais Expert</h3>
+                <p>Equipe treinada nas técnicas mais modernas de degradê e barboterapia.</p>
             </div>
-            <h1 style="font-size: 24px; font-weight: 700;">Barber Pro</h1>
-            <p style="color: var(--text-sec); font-size: 14px;">Gestão para Profissionais</p>
-        </div>
-
-        <div class="input-group">
-            <label>E-mail (Login)</label>
-            <input type="email" id="loginUser" placeholder="seu@email.com">
-        </div>
-
-        <div class="input-group">
-            <label>Senha</label>
-            <input type="password" id="loginSenha" placeholder="Sua senha secreta">
-        </div>
-
-        <div style="text-align: right; margin-bottom: 24px;">
-            <a href="#" style="color: var(--text-sec); font-size: 13px; font-weight: 500;">Esqueceu a senha?</a>
-        </div>
-
-        <button class="btn-primary" onclick="fazerLogin()">
-            Entrar no Painel
-        </button>
-
-        <button onclick="irParaCadastro()" style="background: transparent; border: 1px solid #E5E7EB; color: var(--text-main); width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; margin-top: 16px; cursor: pointer; transition: 0.2s;">
-            Criar conta profissional
-        </button>
-
-    </div>
-
-
-    <div id="screen-register-owner" class="screen">
-
-        <button onclick="voltarParaLogin()" style="background: none; border: none; color: var(--text-sec); font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 20px; cursor: pointer;">
-            <span class="material-icons-round">arrow_back</span> Voltar
-        </button>
-
-        <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 10px;">Junte-se a nós</h1>
-        <p style="color: var(--text-sec); font-size: 14px; margin-bottom: 30px;">Crie sua conta para gerenciar seus agendamentos.</p>
-
-        <div class="input-group">
-            <label>Nome Completo</label>
-            <input type="text" id="regNome" placeholder="Ex: Wesley Silva">
-        </div>
-
-        <div class="input-group">
-            <label>Nome da Barbearia (Opcional)</label>
-            <input type="text" id="regShop" placeholder="Ex: Wesley Barber Shop">
-        </div>
-
-        <div class="input-group">
-            <label>E-mail (Será seu Login)</label>
-            <input type="email" id="regEmail" placeholder="exemplo@email.com">
-        </div>
-
-        <div class="input-group">
-            <label>Criar Senha</label>
-            <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres">
-        </div>
-
-        <div class="input-group">
-            <label>Confirmar Senha</label>
-            <input type="password" id="regSenhaConfirm" placeholder="Repita a senha">
-        </div>
-
-        <button class="btn-primary" onclick="cadastrarNovoDono()">
-            Finalizar Cadastro
-        </button>
-
-        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-sec);">
-            Ao criar conta, você concorda com os Termos de Uso.
-        </p>
-    </div>
-
-
-    <div id="screen-admin" class="screen">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div>
-                <h1 style="margin:0; font-size:20px;">Gestão</h1>
-                <p id="welcome-msg" style="margin:0; font-size:12px; color:var(--text-sec);">Bem-vindo</p>
+            <div class="feature-card">
+                <i class="fas fa-glass-whiskey"></i>
+                <h3>Ambiente Premium</h3>
+                <p>Relaxe em nossas cadeiras de massagem enquanto toma uma bebida por nossa conta.</p>
             </div>
-            <button onclick="logout()" style="background:#FEE2E2; color:#991B1B; border:none; padding:8px; border-radius:8px; cursor:pointer;">
-                <span class="material-icons-round">logout</span>
-            </button>
-        </div>
-
-        <div id="admin-content"></div>
-
-        <div class="admin-bottom-nav">
-            <button class="nav-item active" onclick="navegarAdmin('dashboard')"><span class="material-icons-round">analytics</span><span>Visão</span></button>
-            <button class="nav-item" onclick="navegarAdmin('agenda')"><span class="material-icons-round">calendar_today</span><span>Agenda</span></button>
-            <button class="nav-item" onclick="navegarAdmin('servicos')"><span class="material-icons-round">content_cut</span><span>Serviços</span></button>
-            <button class="nav-item" onclick="navegarAdmin('equipe')"><span class="material-icons-round">groups</span><span>Equipe</span></button>
+            <div class="feature-card">
+                <i class="fas fa-clock"></i>
+                <h3>Sem Atrasos</h3>
+                <p>Respeitamos seu tempo. Agende online e seja atendido na hora marcada.</p>
+            </div>
         </div>
     </div>
+</section>
 
-    <div id="screen-booking" class="screen"> ... (Código do booking anterior) ... </div>
-    <div id="screen-success" class="screen"> ... (Código de sucesso anterior) ... </div>
+<section id="servicos" class="services">
+    <div class="container">
+        <h2 class="section-title">Nossos Serviços</h2>
+        <p class="section-subtitle">Escolha o melhor para o seu estilo</p>
 
-</div>
+        <div class="services-grid" id="services-container">
+            <div style="grid-column: 1/-1; text-align: center; color: #666;">
+                <i class="fas fa-circle-notch fa-spin"></i> Carregando tabela de preços...
+            </div>
+        </div>
+    </div>
+</section>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app.js"></script>
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h2><span>Barber</span>Pro</h2>
+                <p>Onde o estilo encontra a tradição.</p>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+            </div>
+        </div>
+        <hr>
+        <p class="copyright">&copy; 2026 BarberPro. Todos os direitos reservados.</p>
+    </div>
+</footer>
 
-
-
+<script src="js/utils.js"></script>
+<script src="js/home.js"></script>
+<script>
+    // Pequeno script para o menu mobile
+    function toggleHomeMenu() {
+        document.getElementById('home-menu').classList.toggle('show');
+    }
+</script>
 </body>
 </html>

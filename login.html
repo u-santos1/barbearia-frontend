@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Restrito - Barber Pro</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body id="page-login">
+
+<div id="loading-overlay">
+    <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+</div>
+
+<a href="index.html" class="back-link">
+    <i class="fas fa-arrow-left"></i> Voltar para Home
+</a>
+
+<div class="login-container">
+
+    <div id="form-login">
+        <div class="login-header">
+            <h1 class="login-title">Área Admin</h1>
+            <p class="login-subtitle">Gerencie sua barbearia com estilo.</p>
+        </div>
+
+        <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="loginUser" placeholder="admin@barber.com">
+        </div>
+
+        <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="loginSenha" placeholder="••••••••">
+        </div>
+
+        <button class="btn-full" onclick="fazerLogin()">Entrar</button>
+
+        <div class="divider"><span>OU</span></div>
+
+        <button class="toggle-link" onclick="toggleForms()">
+            Não tem conta? <strong>Cadastre-se</strong>
+        </button>
+    </div>
+
+    <div id="form-register" style="display:none;">
+        <div class="login-header">
+            <h1 class="login-title">Novo Acesso</h1>
+            <p class="login-subtitle">Junte-se aos melhores barbeiros.</p>
+        </div>
+
+        <div class="input-group">
+            <label>Nome Completo</label>
+            <input type="text" id="regNome" placeholder="Ex: João Barbeiro">
+        </div>
+
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="regEmail" placeholder="seu@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="regSenha" placeholder="Crie uma senha">
+        </div>
+
+        <button class="btn-full" onclick="cadastrarNovoDono()">Criar Conta</button>
+
+        <div class="divider"><span>OU</span></div>
+
+        <button class="toggle-link" onclick="toggleForms()">
+            Já possui conta? <strong>Fazer Login</strong>
+        </button>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+
+</body>
+</html>

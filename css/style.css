@@ -1,0 +1,193 @@
+/* =========================================
+   1. CONFIGURAÇÕES GERAIS (TEMA DARK)
+   ========================================= */
+:root {
+    --primary: #6366F1;       /* Roxo Neon */
+    --primary-hover: #4F46E5;
+    --dark-bg: #0F172A;       /* Fundo Principal */
+    --dark-card: #1E293B;     /* Fundo dos Cards */
+    --text-main: #F8FAFC;     /* Texto Claro */
+    --text-sec: #94A3B8;      /* Texto Cinza */
+    --gold: #F59E0B;          /* Detalhes Dourados */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--dark-bg);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+h1, h2, h3 { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Loader */
+#loading-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--dark-bg); z-index: 9999;
+    justify-content: center; align-items: center; color: var(--primary);
+}
+
+/* =========================================
+   2. HEADER & NAV
+   ========================================= */
+.header {
+    background: rgba(15, 23, 42, 0.95); /* Semi-transparente */
+    padding: 15px 0; position: sticky; top: 0; z-index: 1000;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+}
+.header .container {
+    max-width: 1200px; margin: 0 auto; padding: 0 20px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.logo {
+    color: white; font-size: 24px; font-weight: 700; text-decoration: none;
+    font-family: 'Oswald', sans-serif;
+}
+.logo span { color: var(--primary); }
+
+.nav-menu { list-style: none; display: flex; gap: 25px; align-items: center; }
+.nav-menu a {
+    color: var(--text-sec); text-decoration: none; font-size: 14px;
+    transition: 0.3s; font-weight: 500; text-transform: uppercase;
+}
+.nav-menu a:hover { color: white; }
+
+/* Botão Agendar no Menu */
+.btn-agendar {
+    background: var(--primary); color: white !important; padding: 8px 20px;
+    border-radius: 4px; font-weight: 700; letter-spacing: 0.5px;
+}
+.btn-login { color: var(--text-sec) !important; font-size: 18px; }
+.hamburger { display: none; color: white; font-size: 24px; cursor: pointer; }
+
+/* =========================================
+   3. HERO SECTION (CAPA)
+   ========================================= */
+.hero {
+    height: 90vh; min-height: 600px;
+    background: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1600&q=80');
+    background-size: cover; background-position: center;
+    position: relative; display: flex; align-items: center;
+}
+/* Overlay escuro para ler o texto */
+.hero-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4));
+}
+.hero-content {
+    position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 20px;
+}
+.badge-hero {
+    background: rgba(99, 102, 241, 0.2); color: var(--primary);
+    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--primary);
+}
+.hero h1 {
+    font-size: 60px; margin: 20px 0; line-height: 1.1; color: white;
+}
+.hero h1 span { color: transparent; -webkit-text-stroke: 1px var(--primary); }
+.hero p {
+    font-size: 18px; color: var(--text-sec); margin-bottom: 35px; max-width: 500px;
+}
+.hero-buttons { display: flex; gap: 15px; }
+
+/* Botões Globais */
+.btn-primary {
+    background: var(--primary); color: white; border: none; padding: 14px 30px;
+    border-radius: 4px; font-weight: 700; cursor: pointer; text-decoration: none;
+    text-transform: uppercase; font-family: 'Oswald', sans-serif; transition: 0.3s;
+    display: inline-flex; align-items: center; justify-content: center;
+}
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+
+.btn-outline {
+    border: 1px solid rgba(255,255,255,0.3); color: white; padding: 14px 30px;
+    border-radius: 4px; font-weight: 700; cursor: pointer; text-decoration: none;
+    text-transform: uppercase; font-family: 'Oswald', sans-serif; transition: 0.3s;
+}
+.btn-outline:hover { border-color: white; background: rgba(255,255,255,0.1); }
+
+/* =========================================
+   4. SEÇÃO "SOBRE" (DIFERENCIAIS)
+   ========================================= */
+.features { padding: 80px 0; background: var(--dark-bg); }
+.features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;
+}
+.feature-card {
+    background: var(--dark-card); padding: 30px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+}
+.feature-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.feature-card i { font-size: 30px; color: var(--primary); margin-bottom: 20px; }
+.feature-card h3 { color: white; font-size: 20px; margin-bottom: 10px; }
+.feature-card p { color: var(--text-sec); font-size: 14px; line-height: 1.6; }
+
+/* =========================================
+   5. SERVIÇOS
+   ========================================= */
+.services { padding: 80px 0; background: #0b1120; } /* Um pouco mais escuro */
+.section-title { text-align: center; font-size: 36px; margin-bottom: 10px; color: white; }
+.section-subtitle { text-align: center; color: var(--text-sec); margin-bottom: 50px; }
+
+.services-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px;
+}
+.service-item {
+    background: var(--dark-card); padding: 30px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: 0.3s;
+}
+.service-item:hover {
+    border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.service-item i { font-size: 40px; color: var(--text-sec); margin-bottom: 15px; }
+.service-item h3 { font-size: 18px; margin-bottom: 5px; font-family: 'Inter', sans-serif; font-weight: 600; }
+.service-item p { font-size: 13px; color: var(--text-sec); }
+.service-price {
+    display: block; font-size: 22px; font-weight: 700; color: var(--primary); margin-top: 15px;
+    font-family: 'Oswald', sans-serif;
+}
+
+/* =========================================
+   6. FOOTER
+   ========================================= */
+.footer { background: #050911; padding: 60px 0 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+.footer-content {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;
+}
+.footer-logo h2 { color: white; font-size: 28px; }
+.footer-logo span { color: var(--primary); }
+.footer-logo p { color: var(--text-sec); font-size: 14px; margin-top: 5px; }
+
+.footer-social { display: flex; gap: 15px; }
+.footer-social a {
+    width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: 0.3s;
+}
+.footer-social a:hover { background: var(--primary); }
+
+.footer hr { border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+.copyright { text-align: center; color: var(--text-sec); font-size: 12px; }
+
+/* =========================================
+   7. RESPONSIVIDADE
+   ========================================= */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none; position: fixed; top: 70px; left: 0; width: 100%;
+        background: var(--dark-bg); flex-direction: column; padding: 30px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .nav-menu.show { display: flex; }
+    .hamburger { display: block; }
+    .hero h1 { font-size: 40px; }
+    .footer-content { flex-direction: column; text-align: center; gap: 20px; }
+}
+
+/* --- MANTER ESTILOS ESSENCIAIS PARA OUTRAS PÁGINAS --- */
+/* (Inputs, Booking Container, etc que usamos no app.js mas não na Home) */
+.input-group label { color: var(--text-sec); }
+.input-group input { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.1); color: white; }

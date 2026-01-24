@@ -1,0 +1,266 @@
+/* =========================================
+   1. LAYOUT PRINCIPAL (Modern Dashboard)
+   ========================================= */
+body#page-admin {
+    background-color: #F8FAFC; /* Cinza azulado muito suave */
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Scrollbar Personalizada (Fina e Moderna) */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+/* --- SIDEBAR (Barra Lateral Moderna) --- */
+.admin-sidebar {
+    width: 270px;
+    background: white;
+    /* Sem borda direita, usamos sombra suave para separar */
+    box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1001;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 20px 15px; /* Padding lateral para os botões "pílula" */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Links do Menu (Estilo Pílula/Botão) */
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #64748B; /* Cinza ardósia */
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 12px; /* Cantos arredondados */
+    transition: all 0.2s ease;
+    border-left: none; /* Removemos a borda antiga */
+}
+
+.sidebar-nav a i {
+    width: 20px;
+    text-align: center;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+/* Hover Suave */
+.sidebar-nav a:hover {
+    background-color: #F1F5F9;
+    color: #334155;
+}
+
+/* Estado Ativo (Moderno: Fundo Roxo, Texto Branco) */
+.sidebar-nav a.active {
+    background: linear-gradient(135deg, #4F46E5, #4338CA);
+    color: white;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); /* Sombra colorida */
+}
+.sidebar-nav a.active i { color: white; }
+
+.sidebar-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #F1F5F9;
+}
+
+/* --- ÁREA PRINCIPAL --- */
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.admin-topbar {
+    background: rgba(255, 255, 255, 0.8); /* Vidro fosco */
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    z-index: 90;
+}
+
+.content-area {
+    padding: 30px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* =========================================
+   2. COMPONENTES (Cards & Tables)
+   ========================================= */
+
+/* Cards de Estatísticas (Clean & Pop) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px; /* Mais arredondado */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: none; /* Sem borda */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* Sombra moderna */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px); /* Levanta levemente */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Tabelas Modernas */
+.admin-card-container {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate; /* Permite border-radius nas linhas */
+    border-spacing: 0;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 15px;
+    color: #64748B;
+    background-color: #F8FAFC;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #E2E8F0;
+}
+/* Arredondar cantos do header da tabela */
+.data-table th:first-child { border-top-left-radius: 8px; }
+.data-table th:last-child { border-top-right-radius: 8px; }
+
+.data-table td {
+    padding: 16px 15px;
+    border-bottom: 1px solid #F1F5F9;
+    color: #1E293B;
+    transition: background 0.2s;
+}
+
+.data-table tr:hover td {
+    background-color: #F8FAFC; /* Highlight no hover */
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges (Etiquetas) */
+.badge {
+    padding: 5px 12px;
+    border-radius: 50px; /* Pílula completa */
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+.badge-agendado { background: #EEF2FF; color: #4F46E5; box-shadow: 0 2px 5px rgba(79, 70, 229, 0.15); }
+.badge-confirmado { background: #DCFCE7; color: #166534; box-shadow: 0 2px 5px rgba(22, 101, 52, 0.15); }
+.badge-cancelado { background: #FEE2E2; color: #991B1B; }
+.badge-concluido { background: #F1F5F9; color: #475569; }
+
+/* =========================================
+   3. RESPONSIVIDADE
+   ========================================= */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.6); /* Mais escuro */
+    z-index: 1000;
+    backdrop-filter: blur(4px); /* Desfoque no fundo */
+}
+
+.hamburger-btn, .close-sidebar-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #334155;
+    cursor: pointer;
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        height: 100%;
+        transform: translateX(-100%);
+        width: 280px;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+    }
+
+    .admin-sidebar.show { transform: translateX(0); }
+    .sidebar-overlay.show { display: block; }
+
+    .content-area { padding: 20px; }
+    .stats-grid { grid-template-columns: 1fr; }
+
+    /* Ajuste para tabela não quebrar no mobile */
+    .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+@media (min-width: 769px) {
+    .hamburger-btn, .close-sidebar-btn, .sidebar-overlay { display: none !important; }
+}
