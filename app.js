@@ -3,7 +3,7 @@
 // ==================================================
 // Use localhost se estiver rodando local, ou a URL do Railway
 const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
-// const API_URL = "http://localhost:8080";
+
 
 // ESTADO DA APLICAÇÃO
 const state = {
@@ -423,7 +423,7 @@ function renderDashboard(container) {
 
     // --- COLOQUE O LINK DO SEU SITE AQUI EMBAIXO ---
     // Exemplo: https://minha-barbearia.vercel.app
-    const SEU_SITE_URL = "http://localhost:63342/barbearia-frontend/index.html"; // <-- Mude isso depois do deploy
+    const SEU_SITE_URL = "https://barbearia-frontend-rose.vercel.app"; // <-- Mude isso depois do deploy
     const LINK_CLIENTE = `${SEU_SITE_URL}?modo=cliente`;
 
     container.innerHTML = `
