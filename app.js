@@ -421,11 +421,16 @@ function renderDashboard(container) {
     const total = adminCache.reduce((acc, item) => acc + (item.valorCobrado || 0), 0);
     const count = adminCache.length;
 
+    // --- COLOQUE O LINK DO SEU SITE AQUI EMBAIXO ---
+    // Exemplo: https://minha-barbearia.vercel.app
+    const SEU_SITE_URL = "http://localhost:63342/barbearia-frontend/index.html"; // <-- Mude isso depois do deploy
+    const LINK_CLIENTE = `${SEU_SITE_URL}?modo=cliente`;
+
     container.innerHTML = `
         <div class="metrics-container">
             <div class="metric-card">
                 <span class="metric-label">Faturamento</span>
-                <span class="metric-value" style="color:#059669">${formatarMoeda(total)}</span>
+                <span class="metric-value" style="color:#059669">R$ ${total.toFixed(2)}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">Agendamentos</span>
@@ -433,17 +438,23 @@ function renderDashboard(container) {
             </div>
         </div>
 
-        <div class="share-card">
-            <h3>Link de Agendamento</h3>
-            <p>Envie para seus clientes</p>
-            <div class="share-link-box" onclick="copiarLink()">
-                <span>barber.pro/agendar</span>
-                <span class="material-icons-round">content_copy</span>
+        <div class="share-card" style="background: linear-gradient(135deg, #4F46E5, #3730A3); padding: 20px; border-radius: 16px; color: white; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">
+            <h3 style="margin:0; font-size:16px;">Link de Agendamento</h3>
+            <p style="margin:5px 0 15px 0; font-size:13px; opacity:0.9;">Envie este link para o cliente agendar direto:</p>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="copiarLink('${LINK_CLIENTE}')" style="flex:1; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; display:flex; align-items:center; justify-content:center; gap:5px;">
+                    <span class="material-icons-round" style="font-size:16px">content_copy</span> Copiar
+                </button>
+
+                <button onclick="enviarZap('${LINK_CLIENTE}')" style="flex:1; background: #25D366; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                    <span class="material-icons-round" style="font-size:16px">whatsapp</span> Enviar
+                </button>
             </div>
         </div>
 
         <div style="background:white; padding:15px; border-radius:16px;">
-            <h2 style="font-size:14px; margin-bottom:15px;">Serviços</h2>
+            <h2 style="font-size:14px; margin-bottom:15px;">Serviços Realizados</h2>
             <div style="height:200px;"><canvas id="chartDash"></canvas></div>
         </div>
     `;
@@ -453,25 +464,46 @@ function renderDashboard(container) {
         if(ctx) {
             const counts = {};
             adminCache.forEach(a => { const n = a.servico?.nome || 'Outros'; counts[n] = (counts[n]||0)+1; });
+            // Verificação básica para não quebrar se não tiver dados
+            const labels = Object.keys(counts);
+            const data = Object.values(counts);
+
+            if(labels.length === 0) {
+                ctx.parentElement.innerHTML = "<p style='text-align:center; color:#999; margin-top:80px'>Sem dados ainda</p>";
+                return;
+            }
+
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(counts),
-                    datasets: [{ data: Object.values(counts), backgroundColor: ['#4F46E5', '#10B981', '#F59E0B'] }]
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: ['#4F46E5', '#10B981', '#F59E0B', '#EC4899', '#6366F1'] }]
                 },
-                options: { maintainAspectRatio: false }
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
         }
     }, 100);
 }
 
-function copiarLink() {
-    // Simula abrir link cliente
-    const vai = confirm("Simular cliente abrindo o link?");
-    if(vai) {
-        state.token = null; // Sai do admin
-        navegarPara('screen-booking');
-    }
+// --- FUNÇÕES DE COMPARTILHAMENTO ---
+
+function copiarLink(link) {
+    navigator.clipboard.writeText(link).then(() => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Link copiado!',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    });
+}
+
+function enviarZap(link) {
+    const mensagem = `Olá! Agende seu horário na barbearia clicando aqui: ${link}`;
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
 }
 
 // RENDER AGENDA
@@ -558,4 +590,15 @@ async function addServicoModal() {
         await fetchAdmin('/servicos', { method: 'POST', body: JSON.stringify({ nome: form[0], preco: form[1], duracaoEmMinutos: form[2] }) });
         carregarListaServicosAdmin(document.getElementById('admin-content'));
     }
+    // --- AUTO-DETECÇÃO DE MODO CLIENTE ---
+    window.addEventListener('load', () => {
+        // 1. Lê a URL do navegador
+        const params = new URLSearchParams(window.location.search);
+
+        // 2. Se tiver "?modo=cliente" no final do link...
+        if (params.get('modo') === 'cliente') {
+            // ...Transforma a tela inicial na tela do cliente
+            prepararLoginCliente();
+        }
+    });
 }

@@ -131,27 +131,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="app.js"></script>
 
-<script>
-    function entrarComoDono() {
-        const senha = document.getElementById('loginSenha').value;
 
-        // Validação simples (Pode remover o if se quiser aceitar qualquer coisa no teste)
-        if(senha.trim() !== "") {
-            document.getElementById('screen-login').classList.remove('active');
-            document.getElementById('screen-admin').classList.add('active');
-        } else {
-            alert("Por favor, digite a senha de acesso.");
-        }
-    }
-
-    function logout() {
-        // Esconde todas as telas
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        // Mostra login
-        document.getElementById('screen-login').classList.add('active');
-        document.getElementById('loginSenha').value = '';
-    }
-</script>
 
 </body>
 </html>
