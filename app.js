@@ -601,4 +601,26 @@ async function addServicoModal() {
             prepararLoginCliente();
         }
     });
+
+    // --- INICIALIZAÇÃO DO SISTEMA ---
+    // Cole isso no FINAL do arquivo app.js
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // 1. Verifica se tem "?modo=cliente" no link
+        const params = new URLSearchParams(window.location.search);
+        const ehModoCliente = params.get('modo') === 'cliente';
+
+        // 2. Garante que começa na tela de login
+        navegarPara('screen-login');
+
+        // 3. Decide qual "cara" a tela de login vai ter
+        if (ehModoCliente) {
+            console.log("Modo Cliente Detectado!");
+            prepararLoginCliente(); // Transforma a tela para pedir telefone
+        } else {
+            console.log("Modo Admin Padrão");
+            // O HTML já é o de admin por padrão, não precisa fazer nada
+        }
+    });
 }
