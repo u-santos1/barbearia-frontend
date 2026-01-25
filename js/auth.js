@@ -1,20 +1,17 @@
 // ==================================================
-// LÓGICA DE LOGIN E CADASTRO
+// LÓGICA DE AUTENTICAÇÃO (LOGIN & CADASTRO)
 // ==================================================
 
-// NOTA: A variável API_URL vem do arquivo js/utils.js.
-// Certifique-se de carregar utils.js ANTES deste arquivo no HTML.
-
+// 1. FUNÇÃO DE LOGIN
 async function fazerLogin() {
     const email = document.getElementById('loginUser').value;
     const senha = document.getElementById('loginSenha').value;
 
     if(!email || !senha) return Swal.fire('Atenção', 'Preencha email e senha', 'warning');
 
-    showLoading(); // Função do utils.js
+    showLoading(); // Vem do utils.js
 
     try {
-        // Conecta no endpoint: @PostMapping("/auth/login")
         const res = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
@@ -22,30 +19,20 @@ async function fazerLogin() {
         });
 
         if(!res.ok) {
-            // Se o erro for 403 ou 401, é senha errada
             if(res.status === 403 || res.status === 401) throw new Error('Credenciais inválidas');
             throw new Error('Erro no servidor');
         }
 
         const data = await res.json();
 
-        // Debug: Veja no console o que o back devolveu
-        console.log("Login sucesso:", data);
-
-        // O Back retorna TokenJWTData(String token, String nome)
-        // ... dentro do try/catch do fazerLogin ...
-
         if(data.token) {
+            // Salva dados no navegador
             localStorage.setItem('token', "Bearer " + data.token);
             localStorage.setItem('donoNome', data.nome);
+            localStorage.setItem('userPerfil', data.perfil); // Importante para o Admin
 
-            // NOVO: Salva se é Dono ou Barbeiro
-            localStorage.setItem('userPerfil', data.perfil);
-
+            // Redireciona
             window.location.href = "admin.html";
-        }
-        } else {
-            throw new Error("Token não recebido do servidor");
         }
 
     } catch(e) {
@@ -54,23 +41,23 @@ async function fazerLogin() {
         Swal.fire({
             icon: 'error',
             title: 'Erro ao entrar',
-            text: e.message === 'Credenciais inválidas' ? 'E-mail ou senha incorretos.' : 'Tente novamente mais tarde.'
+            text: e.message === 'Credenciais inválidas' ? 'E-mail ou senha incorretos.' : 'Tente novamente.'
         });
     }
 }
 
+// 2. FUNÇÃO DE CADASTRO (CRIAR CONTA)
 async function cadastrarNovoDono() {
     const nome = document.getElementById('regNome').value;
     const email = document.getElementById('regEmail').value;
     const senha = document.getElementById('regSenha').value;
 
-    if(!nome || !email || !senha) return Swal.fire('Atenção', 'Preencha todos os campos', 'warning');
+    if(!nome || !email || !senha) return Swal.fire('Campos vazios', 'Preencha todos os dados.', 'warning');
 
     showLoading();
 
     try {
-        // Conecta no endpoint: @PostMapping("/barbeiros")
-        // O DTO espera: nome, email, senha, especialidade
+        // Envia para o Backend criar o Barbeiro (Dono)
         const res = await fetch(`${API_URL}/barbeiros`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
@@ -78,7 +65,8 @@ async function cadastrarNovoDono() {
                 nome: nome,
                 email: email,
                 senha: senha,
-                especialidade: 'Dono' // Define como Dono automaticamente
+                especialidade: 'Dono', // Força o perfil de Dono
+                comissaoPorcentagem: 100.0 // Dono ganha 100% ou define depois
             })
         });
 
@@ -86,36 +74,39 @@ async function cadastrarNovoDono() {
             Swal.fire({
                 icon: 'success',
                 title: 'Conta Criada!',
-                text: 'Faça login para acessar o painel.',
+                text: 'Faça login agora para acessar o painel.',
                 confirmButtonColor: '#6366F1'
             }).then(() => {
                 toggleForms(); // Volta para a tela de login
-                // Limpa os campos
+                // Limpa campos
                 document.getElementById('regNome').value = '';
                 document.getElementById('regEmail').value = '';
                 document.getElementById('regSenha').value = '';
             });
         } else {
-            throw new Error('Falha ao criar conta');
+            throw new Error('Falha ao cadastrar');
         }
     } catch(e) {
-        hideLoading();
+        console.error(e);
         Swal.fire('Erro', 'Não foi possível cadastrar. Verifique se o email já existe.', 'error');
     } finally {
         hideLoading();
     }
 }
 
+// 3. FUNÇÃO DE ALTERNAR TELAS (TOGGLE)
 function toggleForms() {
     const loginInfo = document.getElementById('form-login');
     const regInfo = document.getElementById('form-register');
 
-    // Efeito de transição simples
+    // Se o login está visível (ou sem estilo inline definido), esconde ele e mostra cadastro
     if(loginInfo.style.display === 'none') {
+        // MOSTRAR LOGIN
         regInfo.style.display = 'none';
         loginInfo.style.display = 'block';
         loginInfo.style.animation = "slideUp 0.5s ease-out";
     } else {
+        // MOSTRAR CADASTRO
         loginInfo.style.display = 'none';
         regInfo.style.display = 'block';
         regInfo.style.animation = "slideUp 0.5s ease-out";
