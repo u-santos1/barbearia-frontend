@@ -33,12 +33,17 @@ async function fazerLogin() {
         console.log("Login sucesso:", data);
 
         // O Back retorna TokenJWTData(String token, String nome)
+        // ... dentro do try/catch do fazerLogin ...
+
         if(data.token) {
             localStorage.setItem('token', "Bearer " + data.token);
-            localStorage.setItem('donoNome', data.nome); // Salva o nome para mostrar no Admin
+            localStorage.setItem('donoNome', data.nome);
 
-            // Redireciona para o Dashboard
+            // NOVO: Salva se é Dono ou Barbeiro
+            localStorage.setItem('userPerfil', data.perfil);
+
             window.location.href = "admin.html";
+        }
         } else {
             throw new Error("Token não recebido do servidor");
         }
