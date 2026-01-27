@@ -6,9 +6,11 @@ body.admin-body {
     display: flex;
     height: 100vh;
     overflow: hidden;
+    /* Evita scroll elástico no corpo geral */
+    overscroll-behavior: none;
 }
 
-/* Sidebar */
+/* Sidebar (Menu Lateral) */
 .admin-sidebar {
     width: 260px;
     background: white;
@@ -17,7 +19,7 @@ body.admin-body {
     flex-direction: column;
     height: 100vh;
     flex-shrink: 0;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 50;
 }
 
@@ -66,9 +68,11 @@ body.admin-body {
 .sidebar-footer {
     padding: 20px 25px;
     border-top: 1px solid #F1F5F9;
+    /* Ajuste para iPhone X+ (SafeArea) */
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
 }
 
-/* Main Content */
+/* Main Content (Área Principal) */
 .admin-main {
     flex: 1;
     display: flex;
@@ -80,24 +84,29 @@ body.admin-body {
 }
 
 .admin-topbar {
-    height: 70px;
+    min-height: 70px;
     background: white;
     border-bottom: 1px solid #E2E8F0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 30px;
+    /* Ajuste para não colar no topo em celulares */
+    padding-top: env(safe-area-inset-top);
 }
 
 .topbar-left { display: flex; align-items: center; gap: 15px; }
 .hamburger-btn {
-    background: none; border: none; font-size: 20px; color: #64748B; cursor: pointer; display: none;
+    background: none; border: none; font-size: 24px; color: #64748B; cursor: pointer; display: none; padding: 5px;
 }
 
 .content-area {
     padding: 30px;
     overflow-y: auto;
     height: 100%;
+    /* Scroll suave no iOS */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 100px; /* Espaço extra no final */
 }
 
 /* Cards de Estatísticas */
@@ -112,20 +121,21 @@ body.admin-body {
     background: white;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
     gap: 20px;
     transition: transform 0.2s;
 }
 
-.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
 .stat-icon {
     width: 50px; height: 50px;
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 22px; color: white;
+    flex-shrink: 0;
 }
 
 /* Tabelas e Containers */
@@ -133,14 +143,16 @@ body.admin-body {
     background: white;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    overflow-x: auto;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+    overflow-x: auto; /* Permite scroll horizontal na tabela */
+    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
+    min-width: 600px; /* Força scroll se for menor que isso */
 }
 
 .data-table th {
@@ -157,6 +169,7 @@ body.admin-body {
     padding: 15px;
     border-bottom: 1px solid #F1F5F9;
     color: #334155;
+    white-space: nowrap; /* Evita quebra de linha feia */
 }
 
 .data-table tr:hover td { background: #F8FAFC; }
@@ -168,9 +181,11 @@ body.admin-body {
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
+    display: inline-block;
 }
 .badge-agendado { background: #E0E7FF; color: var(--primary); }
 .badge-confirmado { background: #DCFCE7; color: #166534; }
+.badge-cancelado { background: #FEE2E2; color: #EF4444; }
 
 /* Loading State */
 .loading-state {
@@ -178,64 +193,77 @@ body.admin-body {
 }
 .loading-state i { margin-right: 10px; color: var(--primary); }
 
-/* Classes adicionais (do HTML refatorado) */
-.brand-logo { color: #334155; font-size: 18px; font-weight: 700; }
+/* Classes Utilitárias do Admin */
+.brand-logo { color: #334155; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 .brand-logo i { color: var(--primary); }
-.close-sidebar-btn { display: none; background: none; border: none; font-size: 20px; color: #64748B; }
+.close-sidebar-btn { display: none; background: none; border: none; font-size: 24px; color: #64748B; padding: 5px; cursor: pointer; }
 
 .user-label { font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
-.user-name { display: block; color: #334155; font-size: 14px; margin-bottom: 10px; }
-.btn-logout { font-size: 13px; color: #EF4444; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+.user-name { display: block; color: #334155; font-size: 14px; margin-bottom: 10px; font-weight: 600; }
+.btn-logout { font-size: 13px; color: #EF4444; text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 10px 0; }
 .btn-logout:hover { color: #B91C1C; }
 
-.page-title { font-size: 18px; font-weight: 600; color: #1E293B; }
-.btn-sm { padding: 8px 16px; font-size: 12px; }
+.page-title { font-size: 18px; font-weight: 700; color: #1E293B; margin: 0; }
+.btn-sm { padding: 8px 16px; font-size: 12px; border-radius: 6px; }
 
 /* Config Section */
 .config-section { padding: 0; }
-.color-picker-wrapper { display: flex; align-items: center; gap: 15px; background: #F8FAFC; padding: 10px; border-radius: 8px; }
-.color-picker-wrapper input { width: 40px; height: 40px; border: none; cursor: pointer; background: none; }
-.bg-preview-box { height: 150px; background-color: #E2E8F0; border-radius: 8px; margin-top: 10px; background-size: cover; background-position: center; }
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 8px; }
+.input-group input { width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 14px; outline: none; }
+.input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
 
-/* Responsivo Admin */
+.color-picker-wrapper { display: flex; align-items: center; gap: 15px; background: #F8FAFC; padding: 10px; border-radius: 8px; border: 1px solid #E2E8F0; }
+.color-picker-wrapper input { width: 40px; height: 40px; border: none; cursor: pointer; background: none; padding: 0; }
+.bg-preview-box { height: 150px; background-color: #E2E8F0; border-radius: 8px; margin-top: 10px; background-size: cover; background-position: center; border: 2px dashed #CBD5E1; }
+
+/* =========================================
+   RESPONSIVIDADE (Mobile First Adjustments)
+   ========================================= */
 .sidebar-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; backdrop-filter: blur(2px);
+    transition: opacity 0.3s;
 }
 
 @media (max-width: 768px) {
     .admin-sidebar {
-        position: fixed; left: -260px;
+        position: fixed; left: -280px; top: 0; bottom: 0;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.1);
     }
-    .admin-sidebar.show { left: 0; transform: none; }
-    .hamburger-btn, .close-sidebar-btn { display: block; }
+    .admin-sidebar.show { left: 0; }
+
+    .hamburger-btn { display: block; }
+    .close-sidebar-btn { display: block; } /* Mostra o X no menu */
+
     .sidebar-overlay.show { display: block; }
-    .content-area { padding: 20px; }
+
+    .content-area { padding: 20px; padding-bottom: 80px; }
 }
+
 /* =========================================
-   FIX: CORREÇÕES VISUAIS (TEXTO INVISÍVEL)
+   FIX: CORREÇÕES VISUAIS IPHONE/SAFARI (CRÍTICO)
    ========================================= */
 
-/* 1. Força a cor do texto dos cards para cinza escuro */
+/* 1. Força a cor do texto dos cards para preto/cinza escuro */
 .stat-card h3,
 .stat-card span,
 .stat-card strong,
 .stat-card div {
-    color: #1E293B !important; /* Slate 800 (Quase preto) */
+    color: #1E293B !important;
 }
-
-/* 2. Garante que o subtítulo dos cards fique um pouco mais claro, mas legível */
 .stat-card h3 {
-    color: #64748B !important; /* Slate 500 (Cinza médio) */
+    color: #64748B !important; /* Subtítulo cinza */
 }
 
-/* 3. Ajuste do Cabeçalho para Mobile (iPhone) */
+/* 2. Ajuste do Cabeçalho para telas pequenas */
 @media (max-width: 480px) {
     .admin-topbar {
-        flex-direction: column; /* Coloca o título em cima e botão embaixo */
+        flex-direction: column;
         align-items: flex-start;
         gap: 15px;
-        padding-bottom: 15px;
-        height: auto; /* Deixa crescer conforme precisa */
+        padding: 15px 20px;
+        padding-top: calc(15px + env(safe-area-inset-top)); /* Espaço pro Notch */
+        height: auto;
     }
 
     .topbar-left {
@@ -243,15 +271,17 @@ body.admin-body {
         justify-content: space-between;
     }
 
-    .page-title {
-        font-size: 20px; /* Reduz um pouquinho a fonte */
-        white-space: nowrap;
-    }
+    .page-title { font-size: 18px; }
 
-    /* Estica o botão para ficar fácil de clicar com o dedo */
+    /* Botão Full Width no mobile */
     .admin-topbar .btn-primary {
         width: 100%;
         justify-content: center;
         padding: 12px;
+    }
+
+    /* Ajuste nos cards para não quebrar */
+    .stats-grid {
+        grid-template-columns: 1fr; /* Um card por linha */
     }
 }
