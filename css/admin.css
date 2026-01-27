@@ -308,20 +308,34 @@ body.admin-body {
 /* =========================================
    MOBILE BOTTOM NAVIGATION (Estilo App)
    ========================================= */
+/* =========================================
+   MOBILE BOTTOM NAVIGATION (Correção Final)
+   ========================================= */
 .mobile-bottom-nav {
     display: none; /* Escondido no PC */
 }
 
 @media (max-width: 768px) {
-    /* Ajuste no corpo para o conteúdo não ficar atrás da barra */
+    /* 1. Esconde o botão de 3 barras do TOPO (para não ficar duplicado) */
+    .hamburger-btn {
+        display: none !important;
+    }
+
+    /* 2. Ajuste CRÍTICO de Rolagem: Empurra o conteúdo pra cima */
+    .content-area {
+        /* Espaço suficiente para o conteúdo não ficar atrás da barra */
+        padding-bottom: 120px !important;
+        min-height: 100vh; /* Garante que a tela tenha altura para rolar */
+    }
+
+    /* Garante que o body não trave a rolagem */
     body.admin-body {
         padding-bottom: 0;
+        height: auto;
+        overflow-y: auto; /* Força a rolagem funcionar */
     }
 
-    .content-area {
-        padding-bottom: 90px !important; /* Espaço extra para o scroll */
-    }
-
+    /* Estilo da Barra Inferior */
     .mobile-bottom-nav {
         display: flex;
         position: fixed;
@@ -331,10 +345,10 @@ body.admin-body {
         height: 70px;
         background: white;
         border-top: 1px solid #E2E8F0;
-        z-index: 1000;
-        justify-content: space-around; /* Distribui os ícones */
+        z-index: 1000; /* Fica acima de tudo */
+        justify-content: space-around;
         align-items: center;
-        padding-bottom: env(safe-area-inset-bottom); /* Respeita o iPhone X */
+        padding-bottom: env(safe-area-inset-bottom);
         box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
     }
 
@@ -344,27 +358,21 @@ body.admin-body {
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        color: #94A3B8; /* Cinza inativo */
+        color: #94A3B8;
         font-size: 10px;
         font-weight: 500;
         gap: 4px;
-        width: 100%; /* Área de toque grande */
+        width: 100%;
         height: 100%;
+        background: transparent;
+        border: none;
     }
 
     .nav-item i {
         font-size: 20px;
         margin-bottom: 2px;
-        transition: transform 0.2s;
     }
 
-    /* Efeito de Clique */
-    .nav-item:active i {
-        transform: scale(0.9);
-        color: var(--primary);
-    }
-
-    /* Quando o item está ativo (Você precisará controlar isso no JS se quiser highlight fixo) */
     .nav-item.active-tab {
         color: var(--primary);
         font-weight: 700;
