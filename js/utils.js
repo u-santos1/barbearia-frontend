@@ -1,69 +1,128 @@
 // ==================================================
-// CONFIGURAÇÕES GLOBAIS E UTILITÁRIOS
+// CONFIGURAÇÕES GLOBAIS (CONSTANTES)
+// ==================================================
+const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
+const WHATSAPP_BARBEARIA = "5521999999999"; // Coloque o número do dono aqui
+
+// ==================================================
+// 1. FORMATADORES (HELPERS)
 // ==================================================
 
-const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
-// Número do dono da barbearia para notificações (Formato Internacional: 55 + DDD + Numero)
-const WHATSAPP_BARBEARIA = "5521999999999";
+/**
+ * Formata números para Real (BRL)
+ * Ex: 30.0 -> R$ 30,00
+ */
+function formatarMoeda(valor) {
+    if (valor === undefined || valor === null) return 'R$ 0,00';
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+}
 
-const state = {
-    barbeiroId: null,
-    servicoId: null,
-    data: null,
-    hora: null,
-    token: localStorage.getItem('token'),
-    donoNome: localStorage.getItem('donoNome')
-};
+/**
+ * Formata datas ISO para o padrão brasileiro
+ * Ex: 2026-01-30T14:00 -> 30/01/2026 14:00
+ */
+function formatarData(dataISO) {
+    if (!dataISO) return '--/--';
+    const d = new Date(dataISO);
+    return d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}) + ' ' +
+           d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+}
 
-// --- Funções de UI ---
+/**
+ * Limpa formatação de telefone para enviar ao backend
+ * Ex: (21) 9999-9999 -> 2199999999
+ */
+function limparTelefone(tel) {
+    return tel ? tel.replace(/\D/g, '') : '';
+}
+
+// ==================================================
+// 2. CONTROLE DE INTERFACE (UI)
+// ==================================================
+
 function showLoading() {
     const loader = document.getElementById('loading-overlay');
-    if(loader) loader.style.display = 'flex';
+    if (loader) {
+        loader.classList.remove('hidden');
+        loader.style.display = 'flex';
+    }
 }
 
 function hideLoading() {
     const loader = document.getElementById('loading-overlay');
-    if(loader) loader.style.display = 'none';
-}
-
-function formatarMoeda(valor) {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
-}
-
-// --- MÁSCARAS DE INPUT (NOVO) ---
-function aplicarMascaras() {
-    // Máscara de Telefone (funciona para (00) 0000-0000 e (00) 00000-0000)
-    const inputsTelefone = document.querySelectorAll('input[type="tel"], #regTelefone'); // Adiciona ID se necessário
-    inputsTelefone.forEach(input => {
-        IMask(input, { mask: '(00) 00000-0000' });
-    });
-
-    // Máscara de Preço (Dinheiro) - Usado no Admin
-    const inputsPreco = document.querySelectorAll('#swal-preco'); // Inputs do SweetAlert
-    // Nota: O SweetAlert recria o DOM, então a máscara deve ser aplicada no momento que abre.
-    // Veremos isso no admin.js
-}
-
-// --- Tema e Personalização ---
-function carregarTemaGlobal() {
-    const salvo = localStorage.getItem('site_config');
-    if(salvo) {
-        try {
-            const tema = JSON.parse(salvo);
-            document.documentElement.style.setProperty('--primary', tema.cor);
-
-            const logos = document.querySelectorAll('.logo span');
-            logos.forEach(el => el.innerText = tema.nome.replace('Barber', ''));
-
-            const hero = document.querySelector('.hero');
-            if(hero && tema.bg) {
-                hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('${tema.bg}')`;
-            }
-        } catch(e) { console.error("Erro tema", e); }
+    if (loader) {
+        loader.classList.add('hidden');
+        loader.style.display = 'none';
     }
 }
 
+/**
+ * Aplica máscaras de input usando IMask (se disponível)
+ * Pode ser chamado manualmente ao abrir modais
+ */
+function aplicarMascaras(contexto = document) {
+    if (typeof IMask === 'undefined') return;
+
+    // Máscara de Telefone Geral
+    const inputsTelefone = contexto.querySelectorAll('input[type="tel"], .mask-phone');
+    inputsTelefone.forEach(input => {
+        IMask(input, { mask: '(00) 00000-0000' });
+    });
+}
+
+// ==================================================
+// 3. MOTOR DE TEMAS (PERSONALIZAÇÃO)
+// ==================================================
+function carregarTemaGlobal() {
+    const salvo = localStorage.getItem('site_config');
+    if (salvo) {
+        try {
+            const tema = JSON.parse(salvo);
+
+            // 1. Aplica Cor Principal
+            if (tema.cor) {
+                document.documentElement.style.setProperty('--primary', tema.cor);
+            }
+
+            // 2. Atualiza Nomes (Logos)
+            if (tema.nome) {
+                document.querySelectorAll('.logo span, .brand-logo span').forEach(el => {
+                    // Mantém o ícone, troca só o texto se possível, ou ajusta conforme seu HTML
+                    // Aqui assumimos que o span tem o texto "Barber"
+                    el.innerText = tema.nome.split(' ')[0];
+                });
+
+                // Tenta atualizar o título da página também
+                document.title = tema.nome + " - Agendamento";
+            }
+
+            // 3. Imagem de Fundo (Hero)
+            if (tema.bg) {
+                const hero = document.querySelector('.hero');
+                if (hero) {
+                    hero.style.backgroundImage = `linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.6)), url('${tema.bg}')`;
+                }
+            }
+
+        } catch (e) {
+            console.warn("Erro ao carregar tema:", e);
+        }
+    }
+}
+
+// ==================================================
+// 4. INICIALIZAÇÃO AUTOMÁTICA
+// ==================================================
 document.addEventListener('DOMContentLoaded', () => {
     carregarTemaGlobal();
     aplicarMascaras();
+
+    // Corrige altura de telas mobile (vh fix)
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+});
+
+window.addEventListener('resize', () => {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
 });

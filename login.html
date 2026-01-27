@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso Restrito - Barber Pro</title>
+    <title>Acesso Restrito | Barber Pro</title>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/login.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body id="page-login">
 
-<div id="loading-overlay">
+<div id="loading-overlay" class="loading-overlay hidden">
     <i class="fas fa-circle-notch fa-spin fa-2x"></i>
 </div>
 
@@ -21,22 +20,22 @@
     <i class="fas fa-arrow-left"></i> Voltar para Home
 </a>
 
-<div class="login-container">
+<main class="login-container">
 
-    <div id="form-login">
+    <div id="form-login" class="auth-form">
         <div class="login-header">
             <h1 class="login-title">Área Admin</h1>
             <p class="login-subtitle">Gerencie sua barbearia com estilo.</p>
         </div>
 
         <div class="input-group">
-            <label>E-mail</label>
-            <input type="email" id="loginUser" placeholder="admin@barber.com">
+            <label for="loginUser">E-mail</label>
+            <input type="email" id="loginUser" placeholder="admin@barber.com" autocomplete="username">
         </div>
 
         <div class="input-group">
-            <label>Senha</label>
-            <input type="password" id="loginSenha" placeholder="••••••••">
+            <label for="loginSenha">Senha</label>
+            <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password">
         </div>
 
         <button class="btn-full" onclick="fazerLogin()">Entrar</button>
@@ -48,25 +47,25 @@
         </button>
     </div>
 
-    <div id="form-register" style="display:none;">
+    <div id="form-register" class="auth-form" style="display:none;">
         <div class="login-header">
             <h1 class="login-title">Novo Acesso</h1>
             <p class="login-subtitle">Junte-se aos melhores barbeiros.</p>
         </div>
 
         <div class="input-group">
-            <label>Nome Completo</label>
-            <input type="text" id="regNome" placeholder="Ex: João Barbeiro">
+            <label for="regNome">Nome Completo</label>
+            <input type="text" id="regNome" placeholder="Ex: João Barbeiro" autocomplete="name">
         </div>
 
         <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="regEmail" placeholder="seu@email.com">
+            <label for="regEmail">Email</label>
+            <input type="email" id="regEmail" placeholder="seu@email.com" autocomplete="email">
         </div>
 
         <div class="input-group">
-            <label>Senha</label>
-            <input type="password" id="regSenha" placeholder="Crie uma senha">
+            <label for="regSenha">Senha</label>
+            <input type="password" id="regSenha" placeholder="Crie uma senha forte" autocomplete="new-password">
         </div>
 
         <button class="btn-full" onclick="cadastrarNovoDono()">Criar Conta</button>
@@ -78,7 +77,7 @@
         </button>
     </div>
 
-</div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/imask"></script>
@@ -86,4 +85,3 @@
 <script src="js/auth.js"></script>
 </body>
 </html>
-

@@ -1,129 +1,228 @@
-/* =========================================
-   VISUAL PREMIUM - AGENDAMENTO (App Style)
-   ========================================= */
+//* =========================================
+    AGENDAMENTO (App Experience)
+    ========================================= */
+ body#page-booking {
+     background-color: #F9FAFB;
+     color: #1F2937;
+     padding-bottom: 100px; /* Espaço para o footer fixo */
+ }
 
-/* Fundo Cinza para contraste */
-body#page-booking {
-    background-color: #F3F4F6;
-}
+ /* Header Agendamento */
+ .booking-header {
+     background: #111827;
+     color: white;
+     padding: 20px;
+     position: sticky;
+     top: 0;
+     z-index: 100;
+     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+ }
 
-/* Cabeçalho Dark */
-.booking-header {
-    background: #111827;
-    color: white;
-    padding: 20px;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.booking-header h2 { margin: 0; font-size: 16px; font-weight: 600; }
-.booking-header a { color: white; text-decoration: none; margin-right: 15px; font-size: 18px; }
+ .header-content {
+     max-width: 500px;
+     margin: 0 auto;
+     display: flex;
+     align-items: center;
+     gap: 15px;
+ }
 
-/* Container Principal */
-.booking-container {
-    max-width: 500px; margin: 0 auto; padding: 20px;
-    padding-bottom: 120px; /* Espaço para o footer não cobrir o conteúdo */
-}
+ .back-btn {
+     color: white;
+     font-size: 18px;
+     padding: 5px;
+     transition: transform 0.2s;
+ }
+ .back-btn:active { transform: scale(0.9); }
 
-/* Títulos das Seções */
-.booking-section-title {
-    font-size: 13px; font-weight: 700; color: #6B7280;
-    margin: 25px 0 10px 5px; text-transform: uppercase; letter-spacing: 0.5px;
-    display: flex; align-items: center; gap: 8px;
-}
-.booking-section-title i { color: var(--primary); }
+ .header-titles { display: flex; flex-direction: column; }
+ .page-title { font-size: 16px; margin: 0; font-weight: 600; color: white; }
+ .page-subtitle { font-size: 12px; color: #9CA3AF; }
 
-/* --- CARTÕES (Cards) --- */
-.booking-card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    margin-bottom: 20px;
-    border: 1px solid white;
-    transition: transform 0.2s;
-}
+ /* Container Principal */
+ .booking-container {
+     max-width: 500px;
+     margin: 20px auto;
+     padding: 0 20px;
+ }
 
-/* Seletor de Data */
-.date-input-styled {
-    width: 100%; border: none; background: #F9FAFB;
-    padding: 15px; border-radius: 10px;
-    font-size: 16px; font-weight: 600; color: #374151;
-    outline: none; cursor: pointer;
-}
-.date-input-styled:focus { background: #EEF2FF; color: var(--primary); }
+ /* Passos (Steps) */
+ .booking-step { margin-bottom: 25px; }
 
-/* Barbeiros (Stories) */
-.barber-list-container {
-    display: flex; gap: 15px; overflow-x: auto; padding: 5px 0;
-    scrollbar-width: none; /* Firefox */
-}
-.barber-list-container::-webkit-scrollbar { display: none; } /* Chrome */
+ .booking-section-title {
+     font-size: 13px;
+     color: #6B7280;
+     font-weight: 700;
+     text-transform: uppercase;
+     margin-bottom: 10px;
+     display: flex;
+     align-items: center;
+     gap: 8px;
+ }
+ .booking-section-title i { color: var(--primary); }
 
-.barber-item {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    min-width: 75px; cursor: pointer; opacity: 0.7; transition: 0.3s;
-}
-.barber-avatar {
-    width: 60px; height: 60px; border-radius: 50%;
-    background: #E5E7EB; color: #6B7280;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: 700;
-    border: 3px solid transparent;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-/* Barbeiro Selecionado */
-.barber-item.selected { opacity: 1; transform: scale(1.05); }
-.barber-item.selected .barber-avatar {
-    border-color: var(--primary); background: white; color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
-}
-.barber-item.selected .barber-name { color: var(--primary); font-weight: 700; }
-.barber-name { font-size: 12px; font-weight: 500; color: #4B5563; }
+ .booking-card {
+     background: white;
+     padding: 20px;
+     border-radius: 16px;
+     box-shadow: var(--shadow-sm);
+     border: 1px solid white;
+     transition: 0.2s;
+ }
 
-/* Serviços (Lista Limpa) */
-.service-list-container { display: flex; flex-direction: column; gap: 12px; }
-.service-item-modern {
-    background: #F9FAFB; border: 1px solid transparent; border-radius: 12px;
-    padding: 15px; display: flex; justify-content: space-between; align-items: center;
-    cursor: pointer; transition: 0.2s;
-}
-.service-item-modern:hover { background: #EEF2FF; }
+ /* Input Data */
+ .date-input-styled {
+     width: 100%;
+     border: none;
+     background: #F3F4F6;
+     padding: 15px;
+     border-radius: 10px;
+     font-size: 16px;
+     font-weight: 600;
+     color: #374151;
+     font-family: 'Inter', sans-serif;
+     outline: none;
+ }
+ .date-input-styled:focus { background: #EEF2FF; color: var(--primary); }
 
-/* Serviço Selecionado */
-.service-item-modern.selected {
-    background: white; border-color: var(--primary);
-    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.15); transform: translateY(-2px);
-}
-.service-item-modern.selected .service-price-tag { color: var(--primary); transform: scale(1.1); }
-.service-info h4 { margin: 0; font-size: 15px; color: #1F2937; }
-.service-info p { margin: 4px 0 0 0; font-size: 12px; color: #9CA3AF; display: flex; align-items: center; gap: 4px; }
-.service-price-tag { font-weight: 700; color: var(--primary); font-size: 15px; transition: 0.2s; }
+ /* Lista de Barbeiros (Scroll Horizontal) */
+ .barber-list-container {
+     display: flex;
+     gap: 15px;
+     overflow-x: auto;
+     padding-bottom: 5px;
+     scrollbar-width: none; /* Esconde scrollbar Firefox */
+ }
+ .barber-list-container::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
-/* Horários (Chips) */
-.time-grid-modern { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.time-chip {
-    background: #F3F4F6; border-radius: 8px; border: 1px solid transparent;
-    padding: 12px 0; text-align: center; font-size: 14px; font-weight: 600; color: #4B5563;
-    cursor: pointer; transition: 0.2s;
-}
-.time-chip:hover { background: #E5E7EB; }
-.time-chip.selected {
-    background: var(--primary); color: white;
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4); transform: translateY(-2px);
-}
-.time-chip.disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+ .barber-item {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     min-width: 70px;
+     cursor: pointer;
+     opacity: 0.6;
+     transition: 0.2s;
+ }
 
-/* Footer Fixo Flutuante */
-.booking-footer-modern {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    width: 90%; max-width: 460px;
-    background: #1F2937; color: white;
-    padding: 15px 25px; border-radius: 50px;
-    display: flex; justify-content: space-between; align-items: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 999;
-    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-@keyframes slideUp { from { transform: translate(-50%, 100%); } to { transform: translate(-50%, 0); } }
+ .barber-avatar {
+     width: 60px; height: 60px;
+     background: #E5E7EB;
+     border-radius: 50%;
+     display: flex; align-items: center; justify-content: center;
+     font-weight: 700; color: #6B7280;
+     font-size: 20px;
+     margin-bottom: 5px;
+     border: 2px solid transparent;
+ }
 
-.total-label { font-size: 11px; opacity: 0.7; text-transform: uppercase; }
-.total-value { font-size: 18px; font-weight: 700; color: #A7F3D0; }
+ .barber-item.selected { opacity: 1; transform: scale(1.05); }
+ .barber-item.selected .barber-avatar {
+     background: white;
+     border-color: var(--primary);
+     color: var(--primary);
+     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+ }
+ .barber-name { font-size: 12px; font-weight: 500; }
+
+ /* Lista de Serviços */
+ .service-list-container { display: flex; flex-direction: column; gap: 10px; }
+
+ .service-item-modern {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 15px;
+     background: #F9FAFB;
+     border-radius: 12px;
+     border: 1px solid transparent;
+     cursor: pointer;
+     transition: 0.2s;
+ }
+
+ .service-item-modern:hover { background: #F3F4F6; }
+ .service-item-modern.selected {
+     background: white;
+     border-color: var(--primary);
+     box-shadow: var(--shadow-md);
+ }
+ .service-item-modern.selected .service-price-tag { color: var(--primary); font-weight: 800; }
+
+ .service-info h4 { font-size: 14px; margin: 0; color: #1F2937; }
+ .service-info p { font-size: 12px; color: #9CA3AF; margin: 2px 0 0; }
+ .service-price-tag { font-size: 14px; color: #4B5563; font-weight: 600; }
+
+ /* Grid de Horários */
+ .time-grid-modern {
+     display: grid;
+     grid-template-columns: repeat(4, 1fr);
+     gap: 10px;
+ }
+
+ .time-chip {
+     padding: 10px 0;
+     text-align: center;
+     background: #F3F4F6;
+     border-radius: 8px;
+     font-size: 13px;
+     font-weight: 600;
+     color: #4B5563;
+     cursor: pointer;
+     border: 1px solid transparent;
+ }
+
+ .time-chip:hover { background: #E5E7EB; }
+ .time-chip.selected {
+     background: var(--primary);
+     color: white;
+     box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+ }
+ .time-chip.disabled { opacity: 0.3; pointer-events: none; text-decoration: line-through; }
+
+ /* Footer Flutuante */
+ .booking-footer-modern {
+     position: fixed;
+     bottom: 20px;
+     left: 50%;
+     transform: translateX(-50%);
+     width: 90%;
+     max-width: 480px;
+     background: #111827;
+     color: white;
+     padding: 12px 20px;
+     border-radius: 50px;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+     z-index: 1000;
+     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+ }
+
+ @keyframes slideUp {
+     from { transform: translate(-50%, 100%); opacity: 0; }
+     to { transform: translate(-50%, 0); opacity: 1; }
+ }
+
+ .total-label { font-size: 10px; text-transform: uppercase; color: #9CA3AF; }
+ .total-value { font-size: 18px; font-weight: 700; color: #34D399; }
+
+ .btn-checkout {
+     background: white;
+     color: #111827;
+     border: none;
+     padding: 10px 20px;
+     border-radius: 30px;
+     font-weight: 700;
+     font-size: 14px;
+     cursor: pointer;
+     display: flex; align-items: center; gap: 8px;
+ }
+ .btn-checkout:active { transform: scale(0.95); }
+
+ /* Loading Overlay */
+ .loading-overlay {
+     position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 2000;
+     display: flex; flex-direction: column; align-items: center; justify-content: center;
+ }
+ .loading-overlay.hidden { display: none; }
+ .loading-text { margin-top: 15px; color: var(--primary); font-weight: 600; }

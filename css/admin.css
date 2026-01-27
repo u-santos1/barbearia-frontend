@@ -1,92 +1,74 @@
 /* =========================================
-   1. LAYOUT PRINCIPAL (Modern Dashboard)
+   LAYOUT ADMIN (Tema Light/Clean)
    ========================================= */
-body#page-admin {
-    background-color: #F8FAFC; /* Cinza azulado muito suave */
+body.admin-body {
+    background-color: #F1F5F9; /* Slate 100 */
     display: flex;
     height: 100vh;
     overflow: hidden;
-    font-family: 'Inter', sans-serif;
 }
 
-/* Scrollbar Personalizada (Fina e Moderna) */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-
-/* --- SIDEBAR (Barra Lateral Moderna) --- */
+/* Sidebar */
 .admin-sidebar {
-    width: 270px;
+    width: 260px;
     background: white;
-    /* Sem borda direita, usamos sombra suave para separar */
-    box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+    border-right: 1px solid #E2E8F0;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1001;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
+    z-index: 50;
 }
 
 .sidebar-header {
-    padding: 25px 30px;
+    height: 70px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+    border-bottom: 1px solid #F1F5F9;
 }
 
 .sidebar-nav {
     flex: 1;
-    padding: 20px 15px; /* Padding lateral para os botões "pílula" */
+    padding: 20px 15px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-/* Links do Menu (Estilo Pílula/Botão) */
 .sidebar-nav a {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
-    color: #64748B; /* Cinza ardósia */
+    padding: 12px 15px;
+    color: #64748B;
     text-decoration: none;
     font-weight: 500;
     font-size: 14px;
-    border-radius: 12px; /* Cantos arredondados */
-    transition: all 0.2s ease;
-    border-left: none; /* Removemos a borda antiga */
+    border-radius: 8px;
+    transition: all 0.2s;
 }
 
-.sidebar-nav a i {
-    width: 20px;
-    text-align: center;
-    font-size: 18px;
-    transition: 0.2s;
-}
-
-/* Hover Suave */
 .sidebar-nav a:hover {
-    background-color: #F1F5F9;
-    color: #334155;
+    background-color: #F8FAFC;
+    color: #1E293B;
 }
 
-/* Estado Ativo (Moderno: Fundo Roxo, Texto Branco) */
 .sidebar-nav a.active {
-    background: linear-gradient(135deg, #4F46E5, #4338CA);
+    background-color: var(--primary);
     color: white;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); /* Sombra colorida */
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
-.sidebar-nav a.active i { color: white; }
 
 .sidebar-footer {
-    padding: 20px 30px;
+    padding: 20px 25px;
     border-top: 1px solid #F1F5F9;
 }
 
-/* --- ÁREA PRINCIPAL --- */
+/* Main Content */
 .admin-main {
     flex: 1;
     display: flex;
@@ -98,15 +80,18 @@ body#page-admin {
 }
 
 .admin-topbar {
-    background: rgba(255, 255, 255, 0.8); /* Vidro fosco */
-    backdrop-filter: blur(10px);
-    padding: 15px 30px;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     height: 70px;
-    z-index: 90;
+    background: white;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 15px; }
+.hamburger-btn {
+    background: none; border: none; font-size: 20px; color: #64748B; cursor: pointer; display: none;
 }
 
 .content-area {
@@ -115,152 +100,114 @@ body#page-admin {
     height: 100%;
 }
 
-/* =========================================
-   2. COMPONENTES (Cards & Tables)
-   ========================================= */
-
-/* Cards de Estatísticas (Clean & Pop) */
+/* Cards de Estatísticas */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
     margin-bottom: 30px;
 }
 
 .stat-card {
     background: white;
     padding: 25px;
-    border-radius: 16px; /* Mais arredondado */
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
     display: flex;
     align-items: center;
     gap: 20px;
-    border: none; /* Sem borda */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* Sombra moderna */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s;
 }
 
-.stat-card:hover {
-    transform: translateY(-3px); /* Levanta levemente */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
 .stat-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 24px;
-    flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: white;
 }
 
-/* Tabelas Modernas */
+/* Tabelas e Containers */
 .admin-card-container {
     background: white;
     padding: 25px;
-    border-radius: 16px;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
 }
 
 .data-table {
     width: 100%;
-    border-collapse: separate; /* Permite border-radius nas linhas */
-    border-spacing: 0;
+    border-collapse: collapse;
     font-size: 14px;
-    margin-top: 10px;
 }
 
 .data-table th {
     text-align: left;
     padding: 15px;
+    background: #F8FAFC;
     color: #64748B;
-    background-color: #F8FAFC;
+    font-weight: 600;
     font-size: 12px;
     text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #E2E8F0;
 }
-/* Arredondar cantos do header da tabela */
-.data-table th:first-child { border-top-left-radius: 8px; }
-.data-table th:last-child { border-top-right-radius: 8px; }
 
 .data-table td {
-    padding: 16px 15px;
+    padding: 15px;
     border-bottom: 1px solid #F1F5F9;
-    color: #1E293B;
-    transition: background 0.2s;
+    color: #334155;
 }
 
-.data-table tr:hover td {
-    background-color: #F8FAFC; /* Highlight no hover */
-}
+.data-table tr:hover td { background: #F8FAFC; }
 
-.data-table tr:last-child td {
-    border-bottom: none;
-}
-
-/* Badges (Etiquetas) */
+/* Tags/Badges */
 .badge {
-    padding: 5px 12px;
-    border-radius: 50px; /* Pílula completa */
+    padding: 4px 10px;
+    border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-block;
 }
-.badge-agendado { background: #EEF2FF; color: #4F46E5; box-shadow: 0 2px 5px rgba(79, 70, 229, 0.15); }
-.badge-confirmado { background: #DCFCE7; color: #166534; box-shadow: 0 2px 5px rgba(22, 101, 52, 0.15); }
-.badge-cancelado { background: #FEE2E2; color: #991B1B; }
-.badge-concluido { background: #F1F5F9; color: #475569; }
+.badge-agendado { background: #E0E7FF; color: var(--primary); }
+.badge-confirmado { background: #DCFCE7; color: #166534; }
 
-/* =========================================
-   3. RESPONSIVIDADE
-   ========================================= */
+/* Loading State */
+.loading-state {
+    text-align: center; padding: 50px; color: #94A3B8; font-size: 16px;
+}
+.loading-state i { margin-right: 10px; color: var(--primary); }
+
+/* Classes adicionais (do HTML refatorado) */
+.brand-logo { color: #334155; font-size: 18px; font-weight: 700; }
+.brand-logo i { color: var(--primary); }
+.close-sidebar-btn { display: none; background: none; border: none; font-size: 20px; color: #64748B; }
+
+.user-label { font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
+.user-name { display: block; color: #334155; font-size: 14px; margin-bottom: 10px; }
+.btn-logout { font-size: 13px; color: #EF4444; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+.btn-logout:hover { color: #B91C1C; }
+
+.page-title { font-size: 18px; font-weight: 600; color: #1E293B; }
+.btn-sm { padding: 8px 16px; font-size: 12px; }
+
+/* Config Section */
+.config-section { padding: 0; }
+.color-picker-wrapper { display: flex; align-items: center; gap: 15px; background: #F8FAFC; padding: 10px; border-radius: 8px; }
+.color-picker-wrapper input { width: 40px; height: 40px; border: none; cursor: pointer; background: none; }
+.bg-preview-box { height: 150px; background-color: #E2E8F0; border-radius: 8px; margin-top: 10px; background-size: cover; background-position: center; }
+
+/* Responsivo Admin */
 .sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(15, 23, 42, 0.6); /* Mais escuro */
-    z-index: 1000;
-    backdrop-filter: blur(4px); /* Desfoque no fundo */
-}
-
-.hamburger-btn, .close-sidebar-btn {
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: #334155;
-    cursor: pointer;
-    padding: 5px;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 40; backdrop-filter: blur(2px);
 }
 
 @media (max-width: 768px) {
     .admin-sidebar {
-        position: fixed;
-        top: 0; left: 0;
-        height: 100%;
-        transform: translateX(-100%);
-        width: 280px;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        position: fixed; left: -260px;
     }
-
-    .admin-sidebar.show { transform: translateX(0); }
+    .admin-sidebar.show { left: 0; transform: none; }
+    .hamburger-btn, .close-sidebar-btn { display: block; }
     .sidebar-overlay.show { display: block; }
-
     .content-area { padding: 20px; }
-    .stats-grid { grid-template-columns: 1fr; }
-
-    /* Ajuste para tabela não quebrar no mobile */
-    .data-table { display: block; overflow-x: auto; white-space: nowrap; }
-}
-
-@media (min-width: 769px) {
-    .hamburger-btn, .close-sidebar-btn, .sidebar-overlay { display: none !important; }
 }

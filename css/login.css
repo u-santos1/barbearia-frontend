@@ -1,100 +1,56 @@
 /* =========================================
-   LOGIN & CADASTRO (Tema Dark Premium)
+   LOGIN (Tema Dark)
    ========================================= */
-
-/* Importa variáveis se necessário, mas herda do style.css se linkado junto */
-:root {
-    --primary: #6366F1;
-    --dark-bg: #0F172A;
-    --dark-card: #1E293B;
-    --text-main: #F8FAFC;
-    --text-sec: #94A3B8;
-}
-
 body#page-login {
-    background-color: var(--dark-bg);
-    color: var(--text-main);
+    background: radial-gradient(circle at top, #1E293B 0%, #0F172A 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    font-family: 'Inter', sans-serif;
-    position: relative;
-    background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 70%);
+    padding: 20px;
 }
 
-/* Link de Voltar (Canto superior esquerdo) */
 .back-link {
     position: absolute;
-    top: 25px;
-    left: 25px;
+    top: 20px; left: 20px;
     color: var(--text-sec);
     text-decoration: none;
     font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     transition: 0.3s;
 }
 .back-link:hover { color: var(--primary); }
 
-/* --- CARD DE LOGIN --- */
 .login-container {
-    background-color: var(--dark-card);
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
+}
+
+.auth-form {
+    background: rgba(30, 41, 59, 0.7); /* Vidro escuro */
+    backdrop-filter: blur(10px);
     padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    text-align: center;
-    animation: slideUp 0.5s ease-out;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.5s ease;
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Títulos */
-.login-title {
-    font-family: 'Oswald', sans-serif;
-    font-size: 28px;
-    color: white;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+.login-header { text-align: center; margin-bottom: 30px; }
+.login-title { font-size: 28px; color: white; margin-bottom: 5px; }
+.login-subtitle { font-size: 14px; color: var(--text-sec); }
 
-.login-subtitle {
-    color: var(--text-sec);
-    font-size: 14px;
-    margin-bottom: 30px;
-}
-
-/* Inputs Estilizados (Dark) */
-.input-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.input-group label {
-    display: block;
-    color: var(--text-sec);
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; color: var(--text-sec); font-size: 12px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
 .input-group input {
     width: 100%;
-    background-color: #0b1120; /* Mais escuro que o card */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 14px;
+    padding: 12px 15px;
+    background: #0B1120;
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
+    color: white;
     font-size: 16px;
     outline: none;
     transition: 0.3s;
@@ -105,56 +61,56 @@ body#page-login {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-/* Botão Principal */
 .btn-full {
     width: 100%;
+    padding: 14px;
     background: var(--primary);
     color: white;
     border: none;
-    padding: 14px;
     border-radius: 8px;
-    font-weight: 700;
     font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: 'Oswald', sans-serif;
     cursor: pointer;
     transition: 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-family: 'Oswald', sans-serif;
     margin-top: 10px;
 }
 
 .btn-full:hover {
-    background: #4F46E5;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.25);
+    background: var(--primary-hover);
+    box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
 }
 
-/* Link Alternar (Criar Conta) */
-.toggle-link {
-    background: none;
-    border: none;
-    color: var(--primary);
-    margin-top: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    text-decoration: none;
-    transition: 0.2s;
-}
-.toggle-link:hover { text-decoration: underline; color: white; }
-
-/* Separador */
 .divider {
     margin: 25px 0;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid rgba(255,255,255,0.1);
     position: relative;
+    text-align: center;
 }
 .divider span {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--dark-card);
+    background: #192233; /* Cor aproximada do card */
     padding: 0 10px;
-    color: #475569;
+    color: var(--text-sec);
     font-size: 12px;
+    position: relative;
+    top: -10px;
+}
+
+.toggle-link {
+    background: none; border: none;
+    color: var(--text-sec);
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+.toggle-link strong { color: var(--primary); }
+.toggle-link:hover { color: white; }
+
+/* Loading Overlay (específico do login se necessário) */
+.loading-overlay {
+    position: fixed; inset: 0; background: var(--dark-bg);
+    display: flex; justify-content: center; align-items: center; color: var(--primary);
+    z-index: 100;
 }

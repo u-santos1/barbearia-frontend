@@ -3,79 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="manifest.json">
+    <meta name="description" content="Agende seu horário na Barber Pro. Escolha o profissional, o serviço e a melhor hora para você.">
     <meta name="theme-color" content="#0F172A">
+
+    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Agendar Horário</title>
+
+    <title>Novo Agendamento | Barber Pro</title>
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/booking.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body id="page-booking">
 
-<div id="loading-overlay">
-    <div style="color:var(--primary); font-weight:bold;">Carregando...</div>
+<div id="loading-overlay" class="loading-overlay">
+    <div class="loading-text">Carregando...</div>
 </div>
 
-<div class="booking-header">
-    <div style="max-width: 500px; margin: 0 auto; display: flex; align-items: center;">
-        <a href="index.html"><i class="fas fa-arrow-left"></i></a>
-        <div>
-            <h2 style="font-size: 16px;">Novo Agendamento</h2>
-            <small style="opacity: 0.7; font-size: 12px; font-weight: 400;">Passo a passo</small>
+<header class="booking-header">
+    <div class="header-content">
+        <a href="index.html" class="back-btn" aria-label="Voltar para o início">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-titles">
+            <h1 class="page-title">Novo Agendamento</h1>
+            <small class="page-subtitle">Passo a passo</small>
         </div>
     </div>
-</div>
+</header>
 
-<div class="booking-container">
+<main class="booking-container">
 
-    <div class="booking-section-title"><i class="far fa-calendar-alt"></i> Escolha a Data</div>
-    <div class="booking-card">
-        <input type="date" id="date-picker" class="date-input-styled">
-    </div>
-
-    <div class="booking-section-title"><i class="far fa-user"></i> Profissional</div>
-    <div class="booking-card" style="padding-bottom: 10px;">
-        <div id="list-barbers" class="barber-list-container">
-            <p style="color:#999; font-size:13px; padding:10px;">Carregando...</p>
+    <section class="booking-step">
+        <h2 class="booking-section-title">
+            <i class="far fa-calendar-alt"></i> Escolha a Data
+        </h2>
+        <div class="booking-card">
+            <input type="date" id="date-picker" class="date-input-styled" required>
         </div>
-    </div>
+    </section>
 
-    <div class="booking-section-title"><i class="fas fa-cut"></i> Serviço</div>
-    <div class="booking-card">
-        <div id="list-services" class="service-list-container">
+    <section class="booking-step">
+        <h2 class="booking-section-title">
+            <i class="far fa-user"></i> Profissional
+        </h2>
+        <div class="booking-card card-list">
+            <div id="list-barbers" class="barber-list-container">
+                <p class="placeholder-text">Carregando barbeiros...</p>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div class="booking-section-title"><i class="far fa-clock"></i> Horário</div>
-    <div class="booking-card">
-        <div id="grid-times" class="time-grid-modern">
-            <p style="grid-column: span 4; text-align:center; color:#9CA3AF; font-size: 13px;">
-                Selecione data e profissional primeiro.
-            </p>
+    <section class="booking-step">
+        <h2 class="booking-section-title">
+            <i class="fas fa-cut"></i> Serviço
+        </h2>
+        <div class="booking-card">
+            <div id="list-services" class="service-list-container">
+                <p class="placeholder-text">Selecione um barbeiro primeiro.</p>
+            </div>
         </div>
-    </div>
+    </section>
 
-</div>
+    <section class="booking-step">
+        <h2 class="booking-section-title">
+            <i class="far fa-clock"></i> Horário
+        </h2>
+        <div class="booking-card">
+            <div id="grid-times" class="time-grid-modern">
+                <p class="grid-placeholder">
+                    Selecione data e profissional primeiro.
+                </p>
+            </div>
+        </div>
+    </section>
 
-<div id="booking-footer" class="booking-footer-modern" style="display: none;">
-    <div>
+</main>
+
+<footer id="booking-footer" class="booking-footer-modern hidden">
+    <div class="footer-info">
         <div class="total-label">Valor Total</div>
         <div id="total-price" class="total-value">R$ 0,00</div>
     </div>
-    <button class="btn-primary" onclick="confirmarAgendamento()" style="width: auto; padding: 10px 25px; border-radius: 30px; background: white; color: #1F2937; font-weight: 800;">
-        Agendar <i class="fas fa-arrow-right" style="margin-left:5px;"></i>
+    <button class="btn-primary btn-checkout" onclick="confirmarAgendamento()">
+        Agendar <i class="fas fa-arrow-right"></i>
     </button>
-</div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/imask"></script>
 <script src="js/utils.js"></script>
 <script src="js/booking.js"></script>
-<script src="https://unpkg.com/imask"></script>
 
 </body>
 </html>

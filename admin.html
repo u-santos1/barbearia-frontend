@@ -3,121 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Painel administrativo Barber Pro">
 
-    <title>Dashboard - Barber Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <head>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
+    <title>Dashboard | Barber Pro</title>
 
     <link rel="stylesheet" href="css/style.css">
-
     <link rel="stylesheet" href="css/admin.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body id="page-admin" class="admin-body">
 
 <aside class="admin-sidebar">
     <div class="sidebar-header">
-        <div class="logo" style="color:#334155; font-size:18px;">
-            <i class="fas fa-cut" style="color:var(--primary)"></i> <span>Barber</span>Admin
+        <div class="logo brand-logo">
+            <i class="fas fa-cut"></i> <span>Barber</span>Admin
         </div>
-        <button class="close-sidebar-btn" onclick="toggleSidebar()">
+        <button class="close-sidebar-btn" onclick="toggleSidebar()" aria-label="Fechar Menu">
             <i class="fas fa-times"></i>
         </button>
     </div>
 
     <nav class="sidebar-nav">
         <a href="#" onclick="carregarAdminData('clientes')">
-            <i class="fas fa-address-book"></i> Clientes
+            <i class="fas fa-address-book"></i> <span>Clientes</span>
         </a>
         <a href="#" onclick="carregarAdminData('dashboard')" class="active">
-            <i class="fas fa-chart-pie"></i> Dashboard
+            <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
         </a>
         <a href="#" onclick="carregarAdminData('agenda')">
-            <i class="far fa-calendar-alt"></i> Agenda
+            <i class="far fa-calendar-alt"></i> <span>Agenda</span>
         </a>
         <a href="#" onclick="carregarAdminData('servicos')">
-            <i class="fas fa-cut"></i> Serviços
+            <i class="fas fa-cut"></i> <span>Serviços</span>
         </a>
         <a href="#" onclick="carregarAdminData('equipe')">
-            <i class="fas fa-users"></i> Equipe
+            <i class="fas fa-users"></i> <span>Equipe</span>
         </a>
         <a href="#" onclick="carregarAdminData('config')">
-            <i class="fas fa-cog"></i> Configurar
+            <i class="fas fa-cog"></i> <span>Configurar</span>
         </a>
     </nav>
 
     <div class="sidebar-footer">
-        <div style="font-size:12px; color:#94A3B8; margin-bottom:5px;">Logado como</div>
-        <strong id="adminNameDisplay" style="color:#334155;">Admin</strong>
-        <br>
-        <a href="#" onclick="logout()" style="color:#EF4444; text-decoration:none; font-size:13px; margin-top:5px; display:inline-block;">
+        <div class="user-label">Logado como</div>
+        <strong id="adminNameDisplay" class="user-name">Admin</strong>
+        <a href="#" onclick="logout()" class="btn-logout">
             <i class="fas fa-sign-out-alt"></i> Sair
         </a>
     </div>
 </aside>
 
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <main class="admin-main">
     <header class="admin-topbar">
         <div class="topbar-left">
-            <button class="hamburger-btn" onclick="toggleSidebar()">
+            <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir Menu">
                 <i class="fas fa-bars"></i>
             </button>
-            <h2 style="font-size:18px; color:#1E293B; margin-left:10px;">Painel de Controle</h2>
+            <h2 class="page-title">Painel de Controle</h2>
         </div>
-        <button onclick="copiarLinkAgendamento()" class="btn-primary" style="width:auto; padding:8px 15px; font-size:12px;">
+        <button onclick="copiarLinkAgendamento()" class="btn-primary btn-sm">
             <i class="fas fa-link"></i> Link Cliente
         </button>
     </header>
 
     <div id="admin-content" class="content-area">
-        Carregando...
+        <div class="loading-state">
+            <i class="fas fa-circle-notch fa-spin"></i> Carregando dados...
+        </div>
     </div>
 
-    <section id="config" style="display:none; padding:30px;">
-        <h2 style="margin-bottom:20px; color:#1E293B;">Personalizar Aparência</h2>
+    <section id="config" class="config-section" style="display:none;">
+        <h2 class="section-title">Personalizar Aparência</h2>
 
-        <div class="admin-card-container" style="max-width:600px;">
+        <div class="admin-card-container">
             <div class="input-group">
-                <label>Cor Principal do Site</label>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <input type="color" id="conf-color" value="#4F46E5" style="width:50px; height:40px; padding:0; border:none; background:none; cursor:pointer;">
-                    <span style="color:#64748B; font-family:monospace;">Selecione a cor</span>
+                <label for="conf-color">Cor Principal do Site</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="conf-color" value="#4F46E5">
+                    <span>Selecione a cor da marca</span>
                 </div>
             </div>
 
             <div class="input-group">
-                <label>Nome da Barbearia</label>
+                <label for="conf-name">Nome da Barbearia</label>
                 <input type="text" id="conf-name" placeholder="Ex: BarberPro">
             </div>
 
             <div class="input-group">
-                <label>URL da Imagem de Fundo</label>
-                <input type="text" id="conf-bg" placeholder="https://..." onchange="previewBg(this.value)">
+                <label for="conf-bg">URL da Imagem de Fundo</label>
+                <input type="url" id="conf-bg" placeholder="https://..." onchange="previewBg(this.value)">
             </div>
 
-            <p style="font-size:12px; color:#94A3B8; margin-top:10px;">Pré-visualização do Fundo:</p>
-            <div id="bg-preview" style="width:100%; height:120px; background:#eee; background-size:cover; border-radius:8px; margin-bottom:20px;"></div>
+            <p class="preview-label">Pré-visualização do Fundo:</p>
+            <div id="bg-preview" class="bg-preview-box"></div>
 
-            <button class="btn-primary" onclick="salvarPersonalizacao()" style="width:auto;">
+            <button class="btn-primary" onclick="salvarPersonalizacao()">
                 Salvar Alterações
             </button>
         </div>
     </section>
 </main>
 
-<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/imask"></script>
 <script src="js/admin.js"></script>
 
 <script>
-    // Pequeno script auxiliar para copiar o link
     function copiarLinkAgendamento() {
-        const link = window.location.origin + "/agendamento.html"; // Ajuste conforme seu domínio
+        const link = window.location.origin + "/agendamento.html";
         navigator.clipboard.writeText(link);
         Swal.fire({
             toast: true,
@@ -129,8 +128,5 @@
         });
     }
 </script>
-<script src="https://unpkg.com/imask"></script>
-
 </body>
 </html>
-
