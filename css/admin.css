@@ -285,3 +285,31 @@ body.admin-body {
         grid-template-columns: 1fr; /* Um card por linha */
     }
 }
+/* =========================================
+   FIX: BOTÃO MENU (HAMBURGUER)
+   ========================================= */
+
+/* Garante que o cabeçalho fique acima do conteúdo */
+.admin-topbar {
+    position: relative;
+    z-index: 40; /* Acima do conteúdo, abaixo do menu lateral (que é 50) */
+}
+
+/* Aumenta a área de toque do botão e força visibilidade */
+.hamburger-btn {
+    display: none; /* Desktop esconde */
+    z-index: 45;   /* Acima do cabeçalho */
+    padding: 15px; /* Aumenta área de clique */
+    margin: -10px; /* Compensa visualmente */
+    font-size: 24px;
+    color: #1E293B; /* Cor escura para contraste */
+    background: transparent;
+    cursor: pointer;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: block !important; /* Força aparecer no mobile */
+    }
+}
