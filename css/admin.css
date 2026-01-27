@@ -93,12 +93,11 @@ body.admin-body {
     padding: 0 30px;
     /* Ajuste para não colar no topo em celulares */
     padding-top: env(safe-area-inset-top);
+    position: relative;
+    z-index: 40; /* Garante que fique acima do conteúdo */
 }
 
 .topbar-left { display: flex; align-items: center; gap: 15px; }
-.hamburger-btn {
-    background: none; border: none; font-size: 24px; color: #64748B; cursor: pointer; display: none; padding: 5px;
-}
 
 .content-area {
     padding: 30px;
@@ -232,7 +231,7 @@ body.admin-body {
     }
     .admin-sidebar.show { left: 0; }
 
-    .hamburger-btn { display: block; }
+    .hamburger-btn { display: block !important; }
     .close-sidebar-btn { display: block; } /* Mostra o X no menu */
 
     .sidebar-overlay.show { display: block; }
@@ -241,7 +240,7 @@ body.admin-body {
 }
 
 /* =========================================
-   FIX: CORREÇÕES VISUAIS IPHONE/SAFARI (CRÍTICO)
+   FIX: CORREÇÕES VISUAIS IPHONE/SAFARI
    ========================================= */
 
 /* 1. Força a cor do texto dos cards para preto/cinza escuro */
@@ -273,43 +272,101 @@ body.admin-body {
 
     .page-title { font-size: 18px; }
 
-    /* Botão Full Width no mobile */
     .admin-topbar .btn-primary {
         width: 100%;
         justify-content: center;
         padding: 12px;
     }
 
-    /* Ajuste nos cards para não quebrar */
     .stats-grid {
         grid-template-columns: 1fr; /* Um card por linha */
     }
 }
+
 /* =========================================
-   FIX: BOTÃO MENU (HAMBURGUER)
+   FIX: BOTÃO MENU (HAMBURGUER) - BLINDADO
    ========================================= */
-
-/* Garante que o cabeçalho fique acima do conteúdo */
-.admin-topbar {
-    position: relative;
-    z-index: 40; /* Acima do conteúdo, abaixo do menu lateral (que é 50) */
-}
-
-/* Aumenta a área de toque do botão e força visibilidade */
 .hamburger-btn {
     display: none; /* Desktop esconde */
+    position: relative;
     z-index: 45;   /* Acima do cabeçalho */
     padding: 15px; /* Aumenta área de clique */
     margin: -10px; /* Compensa visualmente */
     font-size: 24px;
-    color: #1E293B; /* Cor escura para contraste */
+    color: #1E293B; /* Cor escura */
     background: transparent;
-    cursor: pointer;
     border: none;
+    cursor: pointer;
+    pointer-events: auto; /* Garante que o toque funcione */
+}
+
+/* Feedback visual ao tocar no celular */
+.hamburger-btn:active {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 50%;
+}
+/* =========================================
+   MOBILE BOTTOM NAVIGATION (Estilo App)
+   ========================================= */
+.mobile-bottom-nav {
+    display: none; /* Escondido no PC */
 }
 
 @media (max-width: 768px) {
-    .hamburger-btn {
-        display: block !important; /* Força aparecer no mobile */
+    /* Ajuste no corpo para o conteúdo não ficar atrás da barra */
+    body.admin-body {
+        padding-bottom: 0;
+    }
+
+    .content-area {
+        padding-bottom: 90px !important; /* Espaço extra para o scroll */
+    }
+
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        background: white;
+        border-top: 1px solid #E2E8F0;
+        z-index: 1000;
+        justify-content: space-around; /* Distribui os ícones */
+        align-items: center;
+        padding-bottom: env(safe-area-inset-bottom); /* Respeita o iPhone X */
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #94A3B8; /* Cinza inativo */
+        font-size: 10px;
+        font-weight: 500;
+        gap: 4px;
+        width: 100%; /* Área de toque grande */
+        height: 100%;
+    }
+
+    .nav-item i {
+        font-size: 20px;
+        margin-bottom: 2px;
+        transition: transform 0.2s;
+    }
+
+    /* Efeito de Clique */
+    .nav-item:active i {
+        transform: scale(0.9);
+        color: var(--primary);
+    }
+
+    /* Quando o item está ativo (Você precisará controlar isso no JS se quiser highlight fixo) */
+    .nav-item.active-tab {
+        color: var(--primary);
+        font-weight: 700;
     }
 }
