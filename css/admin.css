@@ -211,3 +211,47 @@ body.admin-body {
     .sidebar-overlay.show { display: block; }
     .content-area { padding: 20px; }
 }
+/* =========================================
+   FIX: CORREÇÕES VISUAIS (TEXTO INVISÍVEL)
+   ========================================= */
+
+/* 1. Força a cor do texto dos cards para cinza escuro */
+.stat-card h3,
+.stat-card span,
+.stat-card strong,
+.stat-card div {
+    color: #1E293B !important; /* Slate 800 (Quase preto) */
+}
+
+/* 2. Garante que o subtítulo dos cards fique um pouco mais claro, mas legível */
+.stat-card h3 {
+    color: #64748B !important; /* Slate 500 (Cinza médio) */
+}
+
+/* 3. Ajuste do Cabeçalho para Mobile (iPhone) */
+@media (max-width: 480px) {
+    .admin-topbar {
+        flex-direction: column; /* Coloca o título em cima e botão embaixo */
+        align-items: flex-start;
+        gap: 15px;
+        padding-bottom: 15px;
+        height: auto; /* Deixa crescer conforme precisa */
+    }
+
+    .topbar-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .page-title {
+        font-size: 20px; /* Reduz um pouquinho a fonte */
+        white-space: nowrap;
+    }
+
+    /* Estica o botão para ficar fácil de clicar com o dedo */
+    .admin-topbar .btn-primary {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+    }
+}
