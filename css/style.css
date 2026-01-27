@@ -276,3 +276,30 @@ body#page-home {
     .footer-content { flex-direction: column; gap: 20px; text-align: center; }
     .footer-social a { margin: 0 10px; }
 }
+/* =========================================
+   FIX SAFARI / IOS (Dimensionamento)
+   ========================================= */
+
+:root {
+    /* Altura segura para Safari Mobile */
+    --real-height: 100vh;
+}
+
+/* Suporte moderno para navegadores novos (Dynamic Viewport Height) */
+@supports (height: 100dvh) {
+    :root {
+        --real-height: 100dvh;
+    }
+}
+
+body {
+    min-height: 100vh;       /* Fallback */
+    min-height: var(--real-height);
+    /* Remove o "bouncy scroll" (efeito elástico) que quebra layouts fixos */
+    overscroll-behavior-y: none;
+}
+
+/* Garante que inputs não deem zoom no iPhone */
+input, select, textarea {
+    font-size: 16px !important; /* iOS dá zoom se for menor que 16px */
+}

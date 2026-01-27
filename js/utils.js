@@ -126,3 +126,12 @@ window.addEventListener('resize', () => {
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 });
+
+// Ajusta a altura real para navegadores móveis (Safari/Chrome Mobile)
+function ajustarAlturaMobile() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+window.addEventListener('resize', ajustarAlturaMobile);
+document.addEventListener('DOMContentLoaded', ajustarAlturaMobile);
