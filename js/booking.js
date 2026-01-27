@@ -49,12 +49,13 @@ async function carregarRecursos() {
     const listBarbeiros = document.getElementById('list-barbers');
     const listServicos = document.getElementById('list-services');
 
-    // Loading State Simples
-    listBarbeiros.innerHTML = '<div style="padding:10px; color:#666;">Carregando...</div>';
-    listServicos.innerHTML = '<div style="padding:10px; color:#666;">Carregando...</div>';
+    // 1. Limpa visualmente e garante que o Loading Overlay apareça
+    listBarbeiros.innerHTML = '';
+    listServicos.innerHTML = '';
+    showLoading(); // Função do utils.js
 
     try {
-        // Busca Barbeiros e Serviços em paralelo
+        // 2. Busca Barbeiros e Serviços em paralelo (Mais rápido)
         const [resBarbeiros, resServicos] = await Promise.all([
             fetch(`${API_URL}/barbeiros`),
             fetch(`${API_URL}/servicos`)
@@ -63,30 +64,52 @@ async function carregarRecursos() {
         const barbeiros = await resBarbeiros.json();
         const servicos = await resServicos.json();
 
-        // Renderiza Barbeiros
-
-                listBarbeiros.innerHTML = barbeiros.map(b => `
-                    <div class="barber-item" onclick="selecionarBarbeiro(this, ${b.id}, '${b.telefone || ''}')">
-                        <div class="barber-avatar">${b.nome.charAt(0).toUpperCase()}</div>
-                        <span class="barber-name">${b.nome.split(' ')[0]}</span>
-                    </div>
-                `).join('');
-
-        // Renderiza Serviços
-        listServicos.innerHTML = servicos.map(s => `
-            <div class="service-item-modern" onclick="selecionarServico(this, ${s.id}, ${s.preco}, ${s.duracaoEmMinutos})">
-                <div class="service-info">
-                    <h4>${s.nome}</h4>
-                    <p>${s.duracaoEmMinutos} min</p>
+        // 3. Renderiza Barbeiros (Com validação de lista vazia)
+        if (barbeiros.length === 0) {
+            listBarbeiros.innerHTML = '<p class="placeholder-text">Nenhum profissional disponível.</p>';
+        } else {
+            listBarbeiros.innerHTML = barbeiros.map(b => `
+                <div class="barber-item" onclick="selecionarBarbeiro(this, ${b.id}, '${b.telefone || ''}')">
+                    <div class="barber-avatar">${b.nome.charAt(0).toUpperCase()}</div>
+                    <span class="barber-name">${b.nome.split(' ')[0]}</span>
                 </div>
-                <div class="service-price-tag">${formatarMoeda(s.preco)}</div>
-            </div>
-        `).join('');
+            `).join('');
+        }
+
+        // 4. Renderiza Serviços (Com validação de lista vazia)
+        if (servicos.length === 0) {
+            listServicos.innerHTML = '<p class="placeholder-text">Nenhum serviço disponível.</p>';
+        } else {
+            listServicos.innerHTML = servicos.map(s => `
+                <div class="service-item-modern" onclick="selecionarServico(this, ${s.id}, ${s.preco}, ${s.duracaoEmMinutos})">
+                    <div class="service-info">
+                        <h4>${s.nome}</h4>
+                        <p>${s.duracaoEmMinutos} min</p>
+                    </div>
+                    <div class="service-price-tag">${formatarMoeda(s.preco)}</div>
+                </div>
+            `).join('');
+        }
 
     } catch (e) {
         console.error("Erro ao carregar:", e);
-        listBarbeiros.innerHTML = '<p style="color:red; font-size:12px;">Erro ao carregar profissionais.</p>';
-        listServicos.innerHTML = '<p style="color:red; font-size:12px;">Erro ao carregar serviços.</p>';
+
+        // Mensagens visuais no lugar das listas
+        listBarbeiros.innerHTML = '<p style="color:#EF4444; font-size:13px; padding:10px;">Falha ao carregar profissionais.</p>';
+        listServicos.innerHTML = '<p style="color:#EF4444; font-size:13px; padding:10px;">Falha ao carregar serviços.</p>';
+
+        // Alerta flutuante para o usuário saber que deu erro
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro de Conexão',
+            text: 'Não foi possível conectar ao servidor. Verifique sua internet ou tente novamente em instantes.',
+            confirmButtonColor: '#4F46E5'
+        });
+
+    } finally {
+        // --- CORREÇÃO CRÍTICA ---
+        // Isso remove a tela de "Carregando..." independente se deu certo ou erro.
+        hideLoading();
     }
 }
 

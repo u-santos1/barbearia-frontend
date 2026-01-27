@@ -1,27 +1,30 @@
 // ==================================================
-// CONFIGURAÇÕES & CONSTANTES
+// LÓGICA DE AUTENTICAÇÃO
 // ==================================================
-const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
 
-// ==================================================
-// 1. EVENT LISTENERS (UX)
-// ==================================================
+// NOTA: API_URL e showLoading() vêm do arquivo js/utils.js
+
+// 1. EVENTOS E INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', () => {
-    // Permite fazer login apertando ENTER no campo de senha
+    // Permite login com Enter
     const inputSenha = document.getElementById('loginSenha');
-    if(inputSenha) {
-        inputSenha.addEventListener('keypress', function (e) {
+    if (inputSenha) {
+        inputSenha.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') fazerLogin();
         });
     }
 
-    // Limpa sessão antiga ao entrar na tela de login
+    // Aplica máscara no campo de telefone de cadastro (se existir)
+    const inputTelReg = document.getElementById('regTelefone');
+    if (inputTelReg && typeof IMask !== 'undefined') {
+        IMask(inputTelReg, { mask: '(00) 00000-0000' });
+    }
+
+    // Limpa sessão ao abrir a tela
     localStorage.clear();
 });
 
-// ==================================================
-// 2. LÓGICA DE LOGIN
-// ==================================================
+// 2. LOGIN
 async function fazerLogin() {
     const emailInput = document.getElementById('loginUser');
     const senhaInput = document.getElementById('loginSenha');
@@ -29,18 +32,11 @@ async function fazerLogin() {
     const email = emailInput.value.trim();
     const senha = senhaInput.value.trim();
 
-    // Validação Básica
     if (!email || !senha) {
-        return Swal.fire({
-            icon: 'warning',
-            title: 'Campos vazios',
-            text: 'Por favor, informe seu e-mail e senha.',
-            confirmButtonColor: '#6366F1'
-        });
+        return Swal.fire('Ops!', 'Informe e-mail e senha.', 'warning');
     }
 
-    // Feedback visual (Loading)
-    toggleLoading(true);
+    showLoading(); // Função global do utils.js
 
     try {
         const res = await fetch(`${API_URL}/auth/login`, {
@@ -49,69 +45,44 @@ async function fazerLogin() {
             body: JSON.stringify({ email, senha })
         });
 
-        // Tratamento de Erros Específicos
-        if (res.status === 403 || res.status === 401) {
-            throw new Error('E-mail ou senha incorretos.');
-        }
-        if (!res.ok) {
-            throw new Error('Erro de conexão com o servidor.');
-        }
+        if (res.status === 403 || res.status === 401) throw new Error('Credenciais inválidas');
+        if (!res.ok) throw new Error('Erro ao conectar no servidor');
 
         const data = await res.json();
 
-        // Sucesso: Salvar Sessão
         if (data.token) {
             localStorage.setItem('token', "Bearer " + data.token);
             localStorage.setItem('donoNome', data.nome);
             localStorage.setItem('userPerfil', data.perfil);
 
-            // Redirecionamento suave
-            Swal.fire({
-                icon: 'success',
-                title: 'Bem-vindo!',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 1000
-            }).then(() => {
-                window.location.href = "admin.html";
-            });
+            window.location.href = "admin.html";
         }
 
     } catch (error) {
-        console.warn('Login falhou:', error.message); // Log discreto apenas para debug
+        console.error(error);
         Swal.fire({
             icon: 'error',
             title: 'Acesso Negado',
-            text: error.message,
+            text: error.message === 'Credenciais inválidas' ? 'E-mail ou senha incorretos.' : 'Tente novamente.',
             confirmButtonColor: '#EF4444'
         });
     } finally {
-        toggleLoading(false);
+        hideLoading();
     }
 }
 
-// ==================================================
-// 3. LÓGICA DE CADASTRO (NOVO DONO)
-// ==================================================
+// 3. CADASTRO (Novo Dono)
 async function cadastrarNovoDono() {
-    const nomeInput = document.getElementById('regNome');
-    const emailInput = document.getElementById('regEmail');
-    const senhaInput = document.getElementById('regSenha');
+    const nome = document.getElementById('regNome').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const telefone = document.getElementById('regTelefone').value.replace(/\D/g, ''); // Novo Campo
+    const senha = document.getElementById('regSenha').value.trim();
 
-    const nome = nomeInput.value.trim();
-    const email = emailInput.value.trim();
-    const senha = senhaInput.value.trim();
-
-    // Validações
-    if (!nome || !email || !senha) {
-        return Swal.fire('Atenção', 'Preencha todos os campos.', 'warning');
-    }
-    if (senha.length < 6) {
-        return Swal.fire('Senha Fraca', 'A senha deve ter pelo menos 6 caracteres.', 'warning');
+    if (!nome || !email || !senha || !telefone) {
+        return Swal.fire('Campos vazios', 'Preencha todos os dados, incluindo WhatsApp.', 'warning');
     }
 
-    toggleLoading(true);
+    showLoading();
 
     try {
         const res = await fetch(`${API_URL}/barbeiros`, {
@@ -120,103 +91,58 @@ async function cadastrarNovoDono() {
             body: JSON.stringify({
                 nome: nome,
                 email: email,
+                telefone: telefone, // Envia o telefone para o WhatsApp funcionar
                 senha: senha,
-                especialidade: 'Dono',       // Define perfil administrativo
-                comissaoPorcentagem: 100.0   // Dono inicia com 100%
+                especialidade: 'Dono',
+                comissaoPorcentagem: 100.0
             })
         });
 
         if (res.status === 201) {
-            // Sucesso
             Swal.fire({
                 icon: 'success',
                 title: 'Conta Criada!',
-                text: 'Faça login agora para configurar sua barbearia.',
+                text: 'Faça login agora para acessar.',
                 confirmButtonColor: '#6366F1'
             }).then(() => {
-                toggleForms(); // Volta para login
-                // Limpa formulário
-                nomeInput.value = '';
-                emailInput.value = '';
-                senhaInput.value = '';
+                toggleForms();
+                // Limpa campos
+                document.getElementById('regNome').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regTelefone').value = '';
+                document.getElementById('regSenha').value = '';
             });
         } else {
-            // Tenta ler mensagem de erro do backend (ex: Email duplicado)
-            const erroTexto = await res.text();
-            throw new Error(erroTexto || 'Não foi possível criar a conta.');
+            const erro = await res.text();
+            throw new Error(erro || 'Falha ao cadastrar');
         }
-
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro no Cadastro',
-            text: 'Verifique se este e-mail já está em uso.',
-            confirmButtonColor: '#EF4444'
-        });
+    } catch (e) {
+        Swal.fire('Erro', 'Verifique se o e-mail já existe.', 'error');
     } finally {
-        toggleLoading(false);
+        hideLoading();
     }
 }
 
-// ==================================================
-// 4. UTILITÁRIOS VISUAIS
-// ==================================================
-
+// 4. INTERFACE
 function toggleForms() {
     const loginForm = document.getElementById('form-login');
     const registerForm = document.getElementById('form-register');
 
-    // Verifica se login está visível (check simples)
-    const isLoginVisible = loginForm.style.display !== 'none';
-
-    if (isLoginVisible) {
-        // Mudar para Cadastro
-        fadeOut(loginForm, () => {
-            fadeIn(registerForm);
-        });
+    if (loginForm.style.display !== 'none') {
+        // Vai para Cadastro
+        loginForm.style.opacity = 0;
+        setTimeout(() => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            setTimeout(() => registerForm.style.opacity = 1, 50);
+        }, 300);
     } else {
-        // Mudar para Login
-        fadeOut(registerForm, () => {
-            fadeIn(loginForm);
-        });
-    }
-}
-
-// Helpers de Animação simples (substituindo classes CSS complexas se necessário)
-function fadeOut(element, callback) {
-    element.style.opacity = 1;
-    (function fade() {
-        if ((element.style.opacity -= .1) < 0) {
-            element.style.display = "none";
-            if (callback) callback();
-        } else {
-            requestAnimationFrame(fade);
-        }
-    })();
-}
-
-function fadeIn(element) {
-    element.style.opacity = 0;
-    element.style.display = "block";
-    (function fade() {
-        var val = parseFloat(element.style.opacity);
-        if (!((val += .1) > 1)) {
-            element.style.opacity = val;
-            requestAnimationFrame(fade);
-        }
-    })();
-}
-
-// Wrapper para o loading (garante compatibilidade com utils.js ou fallback)
-function toggleLoading(show) {
-    const overlay = document.getElementById('loading-overlay');
-    if (overlay) {
-        if(show) {
-            overlay.classList.remove('hidden');
-            overlay.style.display = 'flex';
-        } else {
-            overlay.classList.add('hidden');
-            overlay.style.display = 'none';
-        }
+        // Vai para Login
+        registerForm.style.opacity = 0;
+        setTimeout(() => {
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            setTimeout(() => loginForm.style.opacity = 1, 50);
+        }, 300);
     }
 }

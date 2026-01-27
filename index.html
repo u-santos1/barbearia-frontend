@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Agende seu horário na melhor barbearia da região. Estilo, tradição e excelência.">
+    <meta name="description" content="Agende seu horário na melhor barbearia da região.">
     <meta name="theme-color" content="#0F172A">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Barber Pro - Estilo & Tradição">
-    <meta property="og:description" content="Agende seu corte online de forma rápida e fácil.">
+    <meta property="og:title" content="Barber Pro">
+    <meta property="og:description" content="Agendamento online rápido e fácil.">
 
-    <title>Barber Pro - Estilo & Tradição</title>
+    <title>Barber Pro - Início</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,12 +32,12 @@
                 <li><a href="#">Início</a></li>
                 <li><a href="#sobre">A Barbearia</a></li>
                 <li><a href="#servicos">Serviços</a></li>
-                <li><a href="agendamento.html" class="btn-agendar">Agendar Horário</a></li>
-                <li><a href="login.html" class="btn-login" aria-label="Área do Barbeiro"><i class="fas fa-user-lock"></i></a></li>
+                <li><a href="agendamento.html" class="btn-agendar">Agendar</a></li>
+                <li><a href="login.html" class="btn-login" aria-label="Login"><i class="fas fa-user-lock"></i></a></li>
             </ul>
         </nav>
 
-        <div class="hamburger" onclick="toggleHomeMenu()" aria-label="Menu Mobile">
+        <div class="hamburger" onclick="toggleHomeMenu()" aria-label="Menu">
             <i class="fas fa-bars"></i>
         </div>
     </div>
@@ -48,10 +48,10 @@
     <div class="container hero-content">
         <span class="badge-hero">Estilo & Tradição</span>
         <h1>Cuidamos do seu visual <br>com <span>Excelência</span></h1>
-        <p>Os melhores profissionais, ambiente climatizado e aquela cerveja gelada esperando por você.</p>
+        <p>Profissionais experientes e ambiente premium esperando por você.</p>
         <div class="hero-buttons">
             <a href="agendamento.html" class="btn-primary">Agendar Agora</a>
-            <a href="#servicos" class="btn-outline">Ver Tabela</a>
+            <a href="#servicos" class="btn-outline">Ver Preços</a>
         </div>
     </div>
 </section>
@@ -62,17 +62,17 @@
             <article class="feature-card">
                 <i class="fas fa-certificate"></i>
                 <h3>Profissionais Expert</h3>
-                <p>Equipe treinada nas técnicas mais modernas de degradê e barboterapia.</p>
+                <p>Técnicas modernas de degradê e barboterapia.</p>
             </article>
             <article class="feature-card">
                 <i class="fas fa-glass-whiskey"></i>
                 <h3>Ambiente Premium</h3>
-                <p>Relaxe em nossas cadeiras de massagem enquanto toma uma bebida por nossa conta.</p>
+                <p>Relaxe em nossas cadeiras com uma bebida gelada.</p>
             </article>
             <article class="feature-card">
                 <i class="fas fa-clock"></i>
                 <h3>Sem Atrasos</h3>
-                <p>Respeitamos seu tempo. Agende online e seja atendido na hora marcada.</p>
+                <p>Respeitamos seu tempo. Atendimento na hora marcada.</p>
             </article>
         </div>
     </div>
@@ -86,7 +86,7 @@
         <div class="services-grid" id="services-container">
             <div class="loading-placeholder">
                 <i class="fas fa-circle-notch fa-spin"></i>
-                <span>Carregando tabela de preços...</span>
+                <span>Carregando serviços...</span>
             </div>
         </div>
     </div>
@@ -97,29 +97,22 @@
         <div class="footer-content">
             <div class="footer-logo">
                 <h2><span>Barber</span>Pro</h2>
-                <p>Onde o estilo encontra a tradição.</p>
+                <p>Estilo e tradição.</p>
             </div>
             <div class="footer-social">
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
             </div>
         </div>
         <hr>
-        <p class="copyright">&copy; <span id="anoAtual">2026</span> BarberPro. Todos os direitos reservados.</p>
+        <p class="copyright">&copy; <span id="anoAtual">2026</span> BarberPro.</p>
     </div>
 </footer>
 
 <script src="https://unpkg.com/imask"></script>
 <script src="js/utils.js"></script>
 <script src="js/home.js"></script>
-<script>
-    // Menu Mobile Toggle
-    function toggleHomeMenu() {
-        document.getElementById('home-menu').classList.toggle('show');
-    }
-    // Atualiza ano automaticamente
-    document.getElementById('anoAtual').textContent = new Date().getFullYear();
-</script>
+
 </body>
 </html>
