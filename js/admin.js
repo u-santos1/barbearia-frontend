@@ -192,10 +192,9 @@ async function apiFetch(endpoint, method = 'GET', body = null) {
 
 // --- DASHBOARD ---
 function renderDashboardDono(container) {
-    // Carrega financeiro separadamente
+    // Carrega financeiro em background
     apiFetch('/agendamentos/admin/financeiro').then(fin => {
         renderizarGrafico(fin);
-        // Atualiza números com animação simples (substituição de texto) sem recriar o HTML todo
         const elFat = document.getElementById('dash-faturamento');
         const elLuc = document.getElementById('dash-lucro');
         const elCom = document.getElementById('dash-comissao');
@@ -205,8 +204,20 @@ function renderDashboardDono(container) {
         if(elCom) elCom.innerText = formatarMoeda(fin.repasseBarbeiros);
     }).catch(console.error);
 
-    const hojeStr = new Date().toISOString().split('T')[0];
-    const agendamentosHoje = state.cacheData.filter(a => a.dataHoraInicio && a.dataHoraInicio.startsWith(hojeStr));
+    // --- LÓGICA DE PRÓXIMOS AGENDAMENTOS (HOJE + FUTURO) ---
+
+    // 1. Pega data de hoje (YYYY-MM-DD) usando fuso local
+    const hojeStr = new Date().toLocaleDateString('en-CA');
+
+    // 2. Filtra: Pega tudo que é Hoje ou Futuro
+    let proximos = state.cacheData.filter(a => a.dataHoraInicio && a.dataHoraInicio.startsWith(hojeStr) || a.dataHoraInicio > hojeStr);
+
+    // 3. Ordena: Do mais próximo para o mais distante (Crescente)
+    proximos.sort((a, b) => new Date(a.dataHoraInicio) - new Date(b.dataHoraInicio));
+
+    // 4. Limita: Mostra apenas os 10 primeiros para não esticar a tela
+    const totalFuturos = proximos.length;
+    proximos = proximos.slice(0, 10);
 
     container.innerHTML = `
         <div class="stats-grid">
@@ -228,23 +239,42 @@ function renderDashboardDono(container) {
              <div class="admin-card-container" style="height:300px; display:flex; justify-content:center; align-items:center;">
                 <canvas id="financeChart"></canvas>
             </div>
+
              <div class="admin-card-container" style="overflow-y:auto; height:300px;">
-                <h3 style="margin-bottom:15px; font-size:16px;">Hoje (${agendamentosHoje.length})</h3>
+                <h3 style="margin-bottom:15px; font-size:16px;">
+                    Próximos Agendamentos (${totalFuturos})
+                </h3>
                 <table class="data-table">
-                    <thead><tr><th>Hora</th><th>Cliente</th><th>Valor</th></tr></thead>
+                    <thead><tr><th>Data/Hora</th><th>Cliente</th><th>Valor</th></tr></thead>
                     <tbody>
-                        ${agendamentosHoje.length ? agendamentosHoje.map(a => `
+                        ${proximos.length ? proximos.map(a => `
                             <tr>
-                                <td>${a.dataHoraInicio.split('T')[1].substring(0,5)}</td>
-                                <td>${a.cliente?.nome || 'Anônimo'}</td>
+                                <td>
+                                    <strong style="color:#4F46E5;">${formatarDataCurta(a.dataHoraInicio)}</strong>
+                                </td>
+                                <td>
+                                    ${a.cliente?.nome || 'Anônimo'} <br>
+                                    <small style="color:#64748B; font-size:10px;">${a.servico?.nome}</small>
+                                </td>
                                 <td>${formatarMoeda(a.valorCobrado)}</td>
                             </tr>
-                        `).join('') : '<tr><td colspan="3" style="text-align:center;">Sem agenda hoje.</td></tr>'}
+                        `).join('') : '<tr><td colspan="3" style="text-align:center;">Nenhum agendamento futuro.</td></tr>'}
                     </tbody>
                 </table>
             </div>
         </div>
     `;
+}
+
+// Helper para data bonita (DD/MM HH:mm)
+function formatarDataCurta(isoDate) {
+    if(!isoDate) return '-';
+    const d = new Date(isoDate);
+    const dia = d.getDate().toString().padStart(2, '0');
+    const mes = (d.getMonth()+1).toString().padStart(2, '0');
+    const hora = d.getHours().toString().padStart(2, '0');
+    const min = d.getMinutes().toString().padStart(2, '0');
+    return `${dia}/${mes} às ${hora}:${min}`;
 }
 
 // --- AGENDA ---
