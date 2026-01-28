@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function logout() {
-    clearInterval(refreshInterval); // Para o refresh ao sair
+    if (refreshInterval) clearInterval(refreshInterval); // Para o refresh ao sair
     localStorage.clear();
     window.location.href = "login.html";
 }
@@ -95,6 +95,7 @@ async function carregarAdminData(aba) {
     if(configSection) configSection.style.display = 'none';
 
     // Só mostra "Carregando" se for a primeira carga (não no refresh automático)
+    // Verifica se já tem conteúdo relevante
     const isAutoRefresh = container.innerHTML.includes('stat-card') || container.innerHTML.includes('agenda-item');
     if (!isAutoRefresh) {
         container.innerHTML = `
@@ -122,6 +123,8 @@ async function carregarAdminData(aba) {
 
         // Tratamento para Spring Page (content) ou List
         state.cacheData = resposta.content ? resposta.content : resposta;
+
+        // Garante que é array
         if (!Array.isArray(state.cacheData)) state.cacheData = [];
 
         // 6. Renderiza Tela
@@ -141,6 +144,7 @@ async function carregarAdminData(aba) {
 
     } catch (error) {
         console.error(error);
+        // Só mostra mensagem de erro na tela se NÃO for refresh automático
         if (!isAutoRefresh) {
             container.innerHTML = `
                 <div style="text-align:center; color:#EF4444; padding:40px;">
@@ -191,15 +195,14 @@ function renderDashboardDono(container) {
     // Carrega financeiro separadamente
     apiFetch('/agendamentos/admin/financeiro').then(fin => {
         renderizarGrafico(fin);
-        // Atualiza números com animação simples (substituição de texto)
-        const elFaturamento = document.getElementById('dash-faturamento');
-        if(elFaturamento) elFaturamento.innerText = formatarMoeda(fin.faturamentoTotal);
+        // Atualiza números com animação simples (substituição de texto) sem recriar o HTML todo
+        const elFat = document.getElementById('dash-faturamento');
+        const elLuc = document.getElementById('dash-lucro');
+        const elCom = document.getElementById('dash-comissao');
 
-        const elLucro = document.getElementById('dash-lucro');
-        if(elLucro) elLucro.innerText = formatarMoeda(fin.lucroCasa);
-
-        const elComissao = document.getElementById('dash-comissao');
-        if(elComissao) elComissao.innerText = formatarMoeda(fin.repasseBarbeiros);
+        if(elFat) elFat.innerText = formatarMoeda(fin.faturamentoTotal);
+        if(elLuc) elLuc.innerText = formatarMoeda(fin.lucroCasa);
+        if(elCom) elCom.innerText = formatarMoeda(fin.repasseBarbeiros);
     }).catch(console.error);
 
     const hojeStr = new Date().toISOString().split('T')[0];
@@ -246,7 +249,9 @@ function renderDashboardDono(container) {
 
 // --- AGENDA ---
 function renderAgenda(container) {
+    // Ordena do mais recente para o mais antigo (ou futuro -> passado)
     const dados = state.cacheData.sort((a, b) => new Date(b.dataHoraInicio) - new Date(a.dataHoraInicio));
+
     const btnBloqueio = state.perfil !== 'Dono' ? `<button onclick="abrirModalBloqueio()" class="btn-primary btn-sm" style="background:#64748B;"><i class="fas fa-ban"></i> Bloquear</button>` : '';
 
     let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 class="page-title">Agenda</h2>${btnBloqueio}</div>`;
@@ -257,11 +262,11 @@ function renderAgenda(container) {
         html += dados.map(a => {
             const isConcluido = a.status === 'CONCLUIDO';
 
-            // CORREÇÃO CRÍTICA: Validação segura dos objetos aninhados (?.nome)
-            const nomeCliente = a.cliente?.nome || 'Cliente Removido';
-            const nomeServico = a.servico?.nome || 'Serviço Removido';
-            // Se for dono, mostra o nome do barbeiro. Se não, não mostra.
-            // Correção aqui: usa a.barbeiro?.nome pois o DTO é aninhado
+            // CORREÇÃO CRÍTICA: Safe Navigation Operator (?.nome)
+            const nomeCliente = a.cliente?.nome || 'Cliente não identificado';
+            const nomeServico = a.servico?.nome || 'Serviço removido';
+
+            // Exibe barbeiro apenas para o Dono
             const infoBarbeiro = state.perfil === 'Dono' ? ` • <i class="fas fa-cut"></i> ${a.barbeiro?.nome || '?'}` : '';
 
             const botoes = !isConcluido && a.status !== 'CANCELADO' ? `
