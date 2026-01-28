@@ -3,6 +3,8 @@
 // ==================================================
 const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
 const DEV_MODE = false;
+// Variável para controlar a atualização automática
+let refreshInterval = null;
 
 // Estado da Aplicação
 const state = {
@@ -101,28 +103,30 @@ function copiarLinkAgendamento() {
 // 3. NAVEGAÇÃO E REQUISIÇÕES
 // ==================================================
 async function carregarAdminData(aba) {
+    // 1. Limpa qualquer atualização automática anterior (para não encavalar)
+    if (refreshInterval) clearInterval(refreshInterval);
 
-// Adicione isso no início da função carregarAdminData(aba)
-// Atualiza a barra inferior mobile
-document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => {
-    el.classList.remove('active-tab');
-    el.style.color = '#94A3B8'; // Reseta cor
-});
-
-// Tenta achar o ícone correspondente e pintar
-const mobileLink = document.querySelector(`.mobile-bottom-nav a[onclick*="'${aba}'"]`);
-if (mobileLink) {
-    mobileLink.classList.add('active-tab');
-    mobileLink.style.color = 'var(--primary)';
-}
-    // 1. UI: Atualiza Menu Ativo
+    // 2. UI: Atualiza Menu Ativo
     document.querySelectorAll('.sidebar-nav a').forEach(el => el.classList.remove('active'));
+
+    // Atualiza a barra inferior mobile também
+    document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => {
+        el.classList.remove('active-tab');
+        el.style.color = '#94A3B8';
+    });
 
     const linkAtivo = document.querySelector(`.sidebar-nav a[onclick*="'${aba}'"]`) ||
                       document.querySelector(`.sidebar-nav a[onclick*='"${aba}"']`);
     if (linkAtivo) linkAtivo.classList.add('active');
 
-    // 2. UI: Alterna Containers
+    // Highlight no Mobile
+    const mobileLink = document.querySelector(`.mobile-bottom-nav a[onclick*="'${aba}'"]`);
+    if (mobileLink) {
+        mobileLink.classList.add('active-tab');
+        mobileLink.style.color = 'var(--primary)';
+    }
+
+    // 3. UI: Alterna Containers
     const container = document.getElementById('admin-content');
     const configSection = document.getElementById('config');
 
@@ -135,12 +139,18 @@ if (mobileLink) {
     if(container) container.style.display = 'block';
     if(configSection) configSection.style.display = 'none';
 
-    container.innerHTML = `
-        <div class="loading-state">
-            <i class="fas fa-circle-notch fa-spin"></i> Carregando dados...
-        </div>`;
+    // Só mostra o "Carregando..." se for a primeira vez (não no refresh automático)
+    // Para isso, verificamos se o container já tem conteúdo relevante
+    const isAutoRefresh = container.innerHTML.includes('stat-card') || container.innerHTML.includes('agenda-item');
 
-    // 3. Define Endpoint
+    if (!isAutoRefresh) {
+        container.innerHTML = `
+            <div class="loading-state">
+                <i class="fas fa-circle-notch fa-spin"></i> Carregando dados...
+            </div>`;
+    }
+
+    // 4. Define Endpoint
     let endpoint = '';
     switch (aba) {
         case 'dashboard':
@@ -153,32 +163,44 @@ if (mobileLink) {
         default:         endpoint = '/agendamentos/meus';
     }
 
-    // 4. Busca Dados
+    // 5. Busca Dados
     try {
         const resposta = await apiFetch(endpoint);
 
         state.cacheData = resposta.content ? resposta.content : resposta;
         if (!Array.isArray(state.cacheData)) state.cacheData = [];
 
-        // 5. Renderiza Tela
+        // 6. Renderiza Tela
         if (aba === 'dashboard') {
             state.perfil === 'Dono' ? renderDashboardDono(container) : renderAgenda(container);
+
+            // --- ATIVA O MODO TEMPO REAL (30s) ---
+            refreshInterval = setInterval(() => {
+                // Chama a função de novo, mas passando um flag silencioso se quiser
+                // Aqui chamamos direto para atualizar os números
+                carregarAdminData(aba);
+            }, 30000); // 30.000 ms = 30 segundos
         }
-        else if (aba === 'agenda') renderAgenda(container);
+        else if (aba === 'agenda') {
+            renderAgenda(container);
+            // Também atualiza a agenda a cada 30s
+            refreshInterval = setInterval(() => carregarAdminData(aba), 30000);
+        }
         else if (aba === 'servicos') renderListaGerencia(container, 'servicos');
         else if (aba === 'equipe') renderListaGerencia(container, 'barbeiros');
         else if (aba === 'clientes') renderListaClientes(container);
 
     } catch (error) {
         console.error(error);
-        container.innerHTML = `
-            <div style="text-align:center; color:#EF4444; padding:40px;">
-                <i class="fas fa-wifi" style="font-size:30px; margin-bottom:10px;"></i><br>
-                <strong>Erro de Conexão</strong><br>
-                <small>${error.message}</small>
-                <br><br>
-                <button onclick="carregarAdminData('${aba}')" class="btn-primary btn-sm">Tentar Novamente</button>
-            </div>`;
+        if (!isAutoRefresh) { // Só mostra erro se não for refresh automático
+            container.innerHTML = `
+                <div style="text-align:center; color:#EF4444; padding:40px;">
+                    <i class="fas fa-wifi" style="font-size:30px; margin-bottom:10px;"></i><br>
+                    <strong>Erro de Conexão</strong><br>
+                    <small>${error.message}</small>
+                    <br><button onclick="carregarAdminData('${aba}')" class="btn-primary btn-sm">Tentar Novamente</button>
+                </div>`;
+        }
     }
 }
 
