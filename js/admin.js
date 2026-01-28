@@ -286,32 +286,83 @@ function renderDashboardDono(container) {
     `;
 }
 
+// --- AGENDA (Versão Corrigida - Resolve nomes duplicados e undefined) ---
 function renderAgenda(container) {
+    // 1. Ordena por horário (mais recente primeiro)
     const dados = state.cacheData.sort((a, b) => new Date(b.dataHoraInicio) - new Date(a.dataHoraInicio));
-    const btnBloqueio = state.perfil !== 'Dono' ? `<button onclick="abrirModalBloqueio()" class="btn-primary btn-sm" style="background:#64748B;"><i class="fas fa-ban"></i> Bloquear</button>` : '';
 
-    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 class="page-title">Agenda</h2>${btnBloqueio}</div>`;
+    // 2. Botão de Bloqueio (só aparece se não for o Dono)
+    const btnBloqueio = state.perfil !== 'Dono' ?
+        `<button onclick="abrirModalBloqueio()" class="btn-primary btn-sm" style="background:#64748B;"><i class="fas fa-ban"></i> Bloquear</button>` : '';
 
-    if (dados.length === 0) html += '<p style="text-align:center; color:#94A3B8;">Nenhum agendamento encontrado.</p>';
-    else {
-        html += '<div style="display:flex; flex-direction:column; gap:10px;">';
-        html += dados.map(a => {
-            const isConcluido = a.status === 'CONCLUIDO';
-            const botoes = !isConcluido && a.status !== 'CANCELADO' ? `
-                <div style="display:flex; gap:10px;">
-                    <button onclick="deletarAgendamento(${a.id})" style="color:#EF4444; border:none; background:none; cursor:pointer;" title="Cancelar"><i class="fas fa-times"></i></button>
-                    <button onclick="concluirAtendimento(${a.id})" class="badge badge-confirmado" style="border:none; cursor:pointer;" title="Concluir"><i class="fas fa-check"></i></button>
-                </div>` : `<span class="badge badge-${statusClass(a.status)}">${a.status}</span>`;
+    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 class="page-title">Agenda</h2>${btnBloqueio}
+                </div>`;
 
+    if (dados.length === 0) {
+        html += '<p style="text-align:center; color:#94A3B8; margin-top: 40px;">Nenhum agendamento encontrado.</p>';
+    } else {
+        html += '<div style="display:flex; flex-direction:column; gap:12px; padding-bottom: 20px;">';
+
+        // AQUI ESTAVA O ERRO: O map precisa criar variáveis NOVAS para cada item
+        html += dados.map(item => {
+            const isConcluido = item.status === 'CONCLUIDO';
+
+            // --- PROTEÇÃO CONTRA DADOS VAZIOS ---
+
+            // 1. Cliente: Se não tiver cliente ou nome, exibe "Anônimo"
+            let nomeCliente = 'Cliente Anônimo';
+            if (item.cliente && item.cliente.nome) {
+                nomeCliente = item.cliente.nome;
+            }
+
+            // 2. Serviço: Se não tiver serviço, exibe traço
+            let nomeServico = '-';
+            if (item.servico && item.servico.nome) {
+                nomeServico = item.servico.nome;
+            }
+
+            // 3. Barbeiro: Resolve o problema do "undefined"
+            // Tenta pegar string direta OU objeto
+            let nomeBarbeiro = '';
+            if (item.barbeiroNome) {
+                nomeBarbeiro = item.barbeiroNome;
+            } else if (item.barbeiro && item.barbeiro.nome) {
+                nomeBarbeiro = item.barbeiro.nome;
+            }
+
+            // 4. Formatação de Data
+            const dataObj = new Date(item.dataHoraInicio);
+            const dataFormatada = dataObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) +
+                                  ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+            // 5. Botões de Ação
+            const botoes = !isConcluido && item.status !== 'CANCELADO' ? `
+                <div style="display:flex; gap:15px; align-items:center;">
+                    <button onclick="deletarAgendamento(${item.id})" style="color:#EF4444; border:none; background:none; cursor:pointer; font-size:16px;" title="Cancelar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button onclick="concluirAtendimento(${item.id})" style="color:#10B981; border:none; background:#ECFDF5; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Concluir">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>`
+                : `<span class="badge badge-${statusClass(item.status)}" style="font-size:10px;">${item.status}</span>`;
+
+            // Retorna o Card HTML preenchido corretamente
             return `
-            <div style="background:white; padding:15px; border-radius:8px; border-left:4px solid ${isConcluido ? '#10B981' : '#4F46E5'}; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-                <div>
-                    <strong>${formatarData(a.dataHoraInicio)}</strong> <span style="color:#64748B;">— ${a.cliente?.nome}</span> <br>
-                    <small style="color:#64748B;">${a.servico?.nome} ${state.perfil === 'Dono' ? ' • ' + a.barbeiroNome : ''}</small>
+            <div style="background:white; padding:16px; border-radius:12px; border-left:5px solid ${isConcluido ? '#10B981' : '#4F46E5'}; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="font-size:15px; font-weight:700; color:#1E293B;">
+                        ${dataFormatada} <span style="font-weight:400; color:#64748B;">— ${nomeCliente}</span>
+                    </div>
+                    <div style="font-size:13px; color:#64748B;">
+                        ${nomeServico} ${nomeBarbeiro ? '• ' + nomeBarbeiro : ''}
+                    </div>
                 </div>
                 ${botoes}
             </div>`;
         }).join('');
+
         html += '</div>';
     }
     container.innerHTML = html;
