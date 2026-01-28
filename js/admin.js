@@ -3,8 +3,6 @@
 // ==================================================
 const API_URL = "https://barbearia-backend-production-0dfc.up.railway.app";
 const DEV_MODE = false;
-// Variável para controlar a atualização automática
-let refreshInterval = null;
 
 // Estado da Aplicação
 const state = {
@@ -13,6 +11,9 @@ const state = {
     perfil: localStorage.getItem('userPerfil'), // 'Dono' ou 'Barbeiro'
     cacheData: []
 };
+
+// Variável para controlar o auto-refresh (evita acumular requisições)
+let refreshInterval = null;
 
 // ==================================================
 // 2. INICIALIZAÇÃO & SEGURANÇA
@@ -41,61 +42,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- FIX: Força o clique do botão Menu (Hambúrguer) no Celular ---
-    const btnMenu = document.querySelector('.hamburger-btn');
-    if (btnMenu) {
-        // 1. Remove o onclick do HTML para evitar conflito
-        btnMenu.removeAttribute('onclick');
-
-        // 2. Clona para limpar listeners antigos
-        const novoBtn = btnMenu.cloneNode(true);
-        btnMenu.parentNode.replaceChild(novoBtn, btnMenu);
-
-        // 3. Adiciona ouvinte de clique LIMPO
-        novoBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("Menu clicado via JS!"); // Debug
-            toggleSidebar();
-        });
-
-        // 4. (Opcional) Adiciona listener de toque para resposta mais rápida
-        novoBtn.addEventListener('touchstart', (e) => {
-             // Apenas previne propagação, deixa o click resolver ou chama direto se preferir
-             e.stopPropagation();
-        }, {passive: true});
-    }
-
     // Carrega tema e inicia na Dashboard
     carregarConfiguracoesSalvas();
     carregarAdminData('dashboard');
 });
 
 function logout() {
+    clearInterval(refreshInterval); // Para o refresh ao sair
     localStorage.clear();
     window.location.href = "login.html";
 }
 
 function toggleSidebar() {
-    console.log("Executando toggleSidebar...");
-    const sidebar = document.querySelector('.admin-sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-
-    if(sidebar) sidebar.classList.toggle('show');
-    if(overlay) overlay.classList.toggle('show');
+    document.querySelector('.admin-sidebar').classList.toggle('show');
+    document.querySelector('.sidebar-overlay').classList.toggle('show');
 }
 
-// Função movida do HTML para cá (Clean Code)
 function copiarLinkAgendamento() {
     const link = window.location.origin + "/agendamento.html";
     navigator.clipboard.writeText(link);
     Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Link copiado!',
-        showConfirmButton: false,
-        timer: 2000
+        toast: true, position: 'top-end', icon: 'success', title: 'Link copiado!', showConfirmButton: false, timer: 2000
     });
 }
 
@@ -103,28 +70,16 @@ function copiarLinkAgendamento() {
 // 3. NAVEGAÇÃO E REQUISIÇÕES
 // ==================================================
 async function carregarAdminData(aba) {
-    // 1. Limpa qualquer atualização automática anterior (para não encavalar)
+    // 1. Limpa atualização automática anterior (para não encavalar)
     if (refreshInterval) clearInterval(refreshInterval);
 
     // 2. UI: Atualiza Menu Ativo
     document.querySelectorAll('.sidebar-nav a').forEach(el => el.classList.remove('active'));
 
-    // Atualiza a barra inferior mobile também
-    document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => {
-        el.classList.remove('active-tab');
-        el.style.color = '#94A3B8';
-    });
-
+    // Seletor inteligente para encontrar o link clicado
     const linkAtivo = document.querySelector(`.sidebar-nav a[onclick*="'${aba}'"]`) ||
                       document.querySelector(`.sidebar-nav a[onclick*='"${aba}"']`);
     if (linkAtivo) linkAtivo.classList.add('active');
-
-    // Highlight no Mobile
-    const mobileLink = document.querySelector(`.mobile-bottom-nav a[onclick*="'${aba}'"]`);
-    if (mobileLink) {
-        mobileLink.classList.add('active-tab');
-        mobileLink.style.color = 'var(--primary)';
-    }
 
     // 3. UI: Alterna Containers
     const container = document.getElementById('admin-content');
@@ -139,10 +94,8 @@ async function carregarAdminData(aba) {
     if(container) container.style.display = 'block';
     if(configSection) configSection.style.display = 'none';
 
-    // Só mostra o "Carregando..." se for a primeira vez (não no refresh automático)
-    // Para isso, verificamos se o container já tem conteúdo relevante
+    // Só mostra "Carregando" se for a primeira carga (não no refresh automático)
     const isAutoRefresh = container.innerHTML.includes('stat-card') || container.innerHTML.includes('agenda-item');
-
     if (!isAutoRefresh) {
         container.innerHTML = `
             <div class="loading-state">
@@ -167,24 +120,20 @@ async function carregarAdminData(aba) {
     try {
         const resposta = await apiFetch(endpoint);
 
+        // Tratamento para Spring Page (content) ou List
         state.cacheData = resposta.content ? resposta.content : resposta;
         if (!Array.isArray(state.cacheData)) state.cacheData = [];
 
         // 6. Renderiza Tela
         if (aba === 'dashboard') {
             state.perfil === 'Dono' ? renderDashboardDono(container) : renderAgenda(container);
-
-            // --- ATIVA O MODO TEMPO REAL (30s) ---
-            refreshInterval = setInterval(() => {
-                // Chama a função de novo, mas passando um flag silencioso se quiser
-                // Aqui chamamos direto para atualizar os números
-                carregarAdminData(aba);
-            }, 30000); // 30.000 ms = 30 segundos
+            // Ativa Auto-Refresh a cada 15s na Dashboard
+            refreshInterval = setInterval(() => carregarAdminData(aba), 15000);
         }
         else if (aba === 'agenda') {
             renderAgenda(container);
-            // Também atualiza a agenda a cada 30s
-            refreshInterval = setInterval(() => carregarAdminData(aba), 30000);
+            // Ativa Auto-Refresh a cada 15s na Agenda
+            refreshInterval = setInterval(() => carregarAdminData(aba), 15000);
         }
         else if (aba === 'servicos') renderListaGerencia(container, 'servicos');
         else if (aba === 'equipe') renderListaGerencia(container, 'barbeiros');
@@ -192,13 +141,14 @@ async function carregarAdminData(aba) {
 
     } catch (error) {
         console.error(error);
-        if (!isAutoRefresh) { // Só mostra erro se não for refresh automático
+        if (!isAutoRefresh) {
             container.innerHTML = `
                 <div style="text-align:center; color:#EF4444; padding:40px;">
                     <i class="fas fa-wifi" style="font-size:30px; margin-bottom:10px;"></i><br>
                     <strong>Erro de Conexão</strong><br>
                     <small>${error.message}</small>
-                    <br><button onclick="carregarAdminData('${aba}')" class="btn-primary btn-sm">Tentar Novamente</button>
+                    <br><br>
+                    <button onclick="carregarAdminData('${aba}')" class="btn-primary btn-sm">Tentar Novamente</button>
                 </div>`;
         }
     }
@@ -236,13 +186,21 @@ async function apiFetch(endpoint, method = 'GET', body = null) {
 // 5. RENDERIZAÇÃO (VIEWS)
 // ==================================================
 
+// --- DASHBOARD ---
 function renderDashboardDono(container) {
+    // Carrega financeiro separadamente
     apiFetch('/agendamentos/admin/financeiro').then(fin => {
         renderizarGrafico(fin);
-        document.getElementById('dash-faturamento').innerText = formatarMoeda(fin.faturamentoTotal);
-        document.getElementById('dash-lucro').innerText = formatarMoeda(fin.lucroCasa);
-        document.getElementById('dash-comissao').innerText = formatarMoeda(fin.repasseBarbeiros);
-    }).catch(() => {});
+        // Atualiza números com animação simples (substituição de texto)
+        const elFaturamento = document.getElementById('dash-faturamento');
+        if(elFaturamento) elFaturamento.innerText = formatarMoeda(fin.faturamentoTotal);
+
+        const elLucro = document.getElementById('dash-lucro');
+        if(elLucro) elLucro.innerText = formatarMoeda(fin.lucroCasa);
+
+        const elComissao = document.getElementById('dash-comissao');
+        if(elComissao) elComissao.innerText = formatarMoeda(fin.repasseBarbeiros);
+    }).catch(console.error);
 
     const hojeStr = new Date().toISOString().split('T')[0];
     const agendamentosHoje = state.cacheData.filter(a => a.dataHoraInicio && a.dataHoraInicio.startsWith(hojeStr));
@@ -266,7 +224,7 @@ function renderDashboardDono(container) {
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
              <div class="admin-card-container" style="height:300px; display:flex; justify-content:center; align-items:center;">
                 <canvas id="financeChart"></canvas>
-             </div>
+            </div>
              <div class="admin-card-container" style="overflow-y:auto; height:300px;">
                 <h3 style="margin-bottom:15px; font-size:16px;">Hoje (${agendamentosHoje.length})</h3>
                 <table class="data-table">
@@ -286,88 +244,47 @@ function renderDashboardDono(container) {
     `;
 }
 
-// --- AGENDA (Versão Corrigida - Resolve nomes duplicados e undefined) ---
+// --- AGENDA ---
 function renderAgenda(container) {
-    // 1. Ordena por horário (mais recente primeiro)
     const dados = state.cacheData.sort((a, b) => new Date(b.dataHoraInicio) - new Date(a.dataHoraInicio));
+    const btnBloqueio = state.perfil !== 'Dono' ? `<button onclick="abrirModalBloqueio()" class="btn-primary btn-sm" style="background:#64748B;"><i class="fas fa-ban"></i> Bloquear</button>` : '';
 
-    // 2. Botão de Bloqueio (só aparece se não for o Dono)
-    const btnBloqueio = state.perfil !== 'Dono' ?
-        `<button onclick="abrirModalBloqueio()" class="btn-primary btn-sm" style="background:#64748B;"><i class="fas fa-ban"></i> Bloquear</button>` : '';
+    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 class="page-title">Agenda</h2>${btnBloqueio}</div>`;
 
-    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2 class="page-title">Agenda</h2>${btnBloqueio}
-                </div>`;
+    if (dados.length === 0) html += '<p style="text-align:center; color:#94A3B8;">Nenhum agendamento encontrado.</p>';
+    else {
+        html += '<div style="display:flex; flex-direction:column; gap:10px;">';
+        html += dados.map(a => {
+            const isConcluido = a.status === 'CONCLUIDO';
 
-    if (dados.length === 0) {
-        html += '<p style="text-align:center; color:#94A3B8; margin-top: 40px;">Nenhum agendamento encontrado.</p>';
-    } else {
-        html += '<div style="display:flex; flex-direction:column; gap:12px; padding-bottom: 20px;">';
+            // CORREÇÃO CRÍTICA: Validação segura dos objetos aninhados (?.nome)
+            const nomeCliente = a.cliente?.nome || 'Cliente Removido';
+            const nomeServico = a.servico?.nome || 'Serviço Removido';
+            // Se for dono, mostra o nome do barbeiro. Se não, não mostra.
+            // Correção aqui: usa a.barbeiro?.nome pois o DTO é aninhado
+            const infoBarbeiro = state.perfil === 'Dono' ? ` • <i class="fas fa-cut"></i> ${a.barbeiro?.nome || '?'}` : '';
 
-        // AQUI ESTAVA O ERRO: O map precisa criar variáveis NOVAS para cada item
-        html += dados.map(item => {
-            const isConcluido = item.status === 'CONCLUIDO';
+            const botoes = !isConcluido && a.status !== 'CANCELADO' ? `
+                <div style="display:flex; gap:10px;">
+                    <button onclick="deletarAgendamento(${a.id})" style="color:#EF4444; border:none; background:none; cursor:pointer;" title="Cancelar"><i class="fas fa-times"></i></button>
+                    <button onclick="concluirAtendimento(${a.id})" class="badge badge-confirmado" style="border:none; cursor:pointer;" title="Concluir"><i class="fas fa-check"></i></button>
+                </div>` : `<span class="badge badge-${statusClass(a.status)}">${a.status}</span>`;
 
-            // --- PROTEÇÃO CONTRA DADOS VAZIOS ---
-
-            // 1. Cliente: Se não tiver cliente ou nome, exibe "Anônimo"
-            let nomeCliente = 'Cliente Anônimo';
-            if (item.cliente && item.cliente.nome) {
-                nomeCliente = item.cliente.nome;
-            }
-
-            // 2. Serviço: Se não tiver serviço, exibe traço
-            let nomeServico = '-';
-            if (item.servico && item.servico.nome) {
-                nomeServico = item.servico.nome;
-            }
-
-            // 3. Barbeiro: Resolve o problema do "undefined"
-            // Tenta pegar string direta OU objeto
-            let nomeBarbeiro = '';
-            if (item.barbeiroNome) {
-                nomeBarbeiro = item.barbeiroNome;
-            } else if (item.barbeiro && item.barbeiro.nome) {
-                nomeBarbeiro = item.barbeiro.nome;
-            }
-
-            // 4. Formatação de Data
-            const dataObj = new Date(item.dataHoraInicio);
-            const dataFormatada = dataObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) +
-                                  ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-
-            // 5. Botões de Ação
-            const botoes = !isConcluido && item.status !== 'CANCELADO' ? `
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <button onclick="deletarAgendamento(${item.id})" style="color:#EF4444; border:none; background:none; cursor:pointer; font-size:16px;" title="Cancelar">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <button onclick="concluirAtendimento(${item.id})" style="color:#10B981; border:none; background:#ECFDF5; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Concluir">
-                        <i class="fas fa-check"></i>
-                    </button>
-                </div>`
-                : `<span class="badge badge-${statusClass(item.status)}" style="font-size:10px;">${item.status}</span>`;
-
-            // Retorna o Card HTML preenchido corretamente
             return `
-            <div style="background:white; padding:16px; border-radius:12px; border-left:5px solid ${isConcluido ? '#10B981' : '#4F46E5'}; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
-                <div style="display:flex; flex-direction:column; gap:4px;">
-                    <div style="font-size:15px; font-weight:700; color:#1E293B;">
-                        ${dataFormatada} <span style="font-weight:400; color:#64748B;">— ${nomeCliente}</span>
-                    </div>
-                    <div style="font-size:13px; color:#64748B;">
-                        ${nomeServico} ${nomeBarbeiro ? '• ' + nomeBarbeiro : ''}
-                    </div>
+            <div class="agenda-item" style="background:white; padding:15px; border-radius:8px; border-left:4px solid ${isConcluido ? '#10B981' : '#4F46E5'}; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                <div>
+                    <strong>${formatarData(a.dataHoraInicio)}</strong> <span style="color:#64748B;">— ${nomeCliente}</span> <br>
+                    <small style="color:#64748B;">${nomeServico}${infoBarbeiro}</small>
                 </div>
                 ${botoes}
             </div>`;
         }).join('');
-
         html += '</div>';
     }
     container.innerHTML = html;
 }
 
+// --- GERENCIAMENTO (SERVIÇOS / EQUIPE) ---
 function renderListaGerencia(container, tipo) {
     const dados = state.cacheData;
     const titulo = tipo === 'servicos' ? 'Serviços' : 'Equipe';
@@ -395,6 +312,7 @@ function renderListaGerencia(container, tipo) {
     container.innerHTML = html;
 }
 
+// --- CLIENTES ---
 function renderListaClientes(container) {
     const dados = state.cacheData;
     let html = `
@@ -470,7 +388,7 @@ async function adicionarItem(tipo) {
             preConfirm: () => [
                 document.getElementById('swal-nome').value,
                 document.getElementById('swal-email').value,
-                document.getElementById('swal-tel').value.replace(/\D/g, ''),
+                document.getElementById('swal-tel').value.replace(/\D/g, ''), // Limpa zap
                 document.getElementById('swal-pass').value,
                 document.getElementById('swal-com').value
             ]
@@ -537,7 +455,6 @@ async function abrirModalBloqueio() {
             inicio: `${form.d}T${form.i}:00`,
             fim: `${form.d}T${form.f}:00`,
             motivo: form.m
-            // ID do barbeiro vai pelo Token
         });
         carregarAdminData('agenda');
     }
