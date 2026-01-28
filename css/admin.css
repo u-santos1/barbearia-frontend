@@ -378,3 +378,50 @@ body.admin-body {
         font-weight: 700;
     }
 }
+/* =========================================
+   CORREÇÃO MOBILE (IPHONE & ANDROID)
+   ========================================= */
+
+/* 1. Corrige o corte lateral na tabela */
+.admin-card-container {
+    overflow-x: auto; /* Permite rolar para o lado se a tabela for grande */
+    -webkit-overflow-scrolling: touch; /* Rolagem suave no iPhone */
+    width: 100%;
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+/* 2. Ajusta a tabela para caber melhor */
+.data-table {
+    width: 100%;
+    min-width: 300px; /* Garante um tamanho mínimo */
+    border-collapse: collapse;
+}
+
+/* Diminui a fonte apenas no celular para caber mais texto */
+@media (max-width: 480px) {
+    .data-table th,
+    .data-table td {
+        font-size: 12px; /* Fonte menor */
+        padding: 8px 4px; /* Menos espaçamento lateral */
+    }
+
+    /* Quebra de linha no nome do cliente se for muito longo */
+    .data-table td {
+        white-space: normal;
+        word-wrap: break-word;
+    }
+}
+
+/* 3. Proteção contra o "Notch" do iPhone e Barra Fixa */
+body {
+    /* Adiciona espaço extra no topo para o conteúdo não ficar escondido atrás do menu */
+    padding-top: 20px;
+    padding-bottom: 80px; /* Espaço para o menu de baixo não cobrir o conteúdo */
+
+    /* Variáveis de ambiente do iOS para respeitar a área segura */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* Se você tem um header fixo no topo, adicione isso nele: */
+/* Exemplo: .header-fixo { padding-top: env(safe-area-inset-top); } */
