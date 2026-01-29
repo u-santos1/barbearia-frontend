@@ -404,44 +404,75 @@ async function adicionarItem(tipo) {
             carregarAdminData('servicos');
         }
     }
-    else if (tipo === 'barbeiros') {
-        const { value: form } = await Swal.fire({
-            title: 'Novo Profissional',
-            html: `
-                <input id="swal-nome" class="swal2-input" placeholder="Nome">
-                <input id="swal-email" class="swal2-input" placeholder="Email (Login)">
-                <input id="swal-tel" class="swal2-input" placeholder="WhatsApp (Com DDD)">
-                <input id="swal-pass" type="password" class="swal2-input" placeholder="Senha">
-                <label style="margin-top:10px; font-size:12px;">Comissão (%)</label>
-                <input id="swal-com" type="number" class="swal2-input" value="50">
-            `,
-            focusConfirm: false, showCancelButton: true, confirmButtonText: 'Cadastrar',
-            didOpen: () => {
-                const el = document.getElementById('swal-tel');
-                if(typeof IMask !== 'undefined') IMask(el, {mask: '(00) 00000-0000'});
-            },
-            preConfirm: () => [
-                document.getElementById('swal-nome').value,
-                document.getElementById('swal-email').value,
-                document.getElementById('swal-tel').value.replace(/\D/g, ''), // Limpa zap
-                document.getElementById('swal-pass').value,
-                document.getElementById('swal-com').value
-            ]
-        });
+   // Dentro da função adicionarItem(tipo) ...
 
-        if (form && form[0] && form[1]) {
-            await apiFetch('/barbeiros', 'POST', {
-                nome: form[0],
-                email: form[1],
-                telefone: form[2],
-                senha: form[3],
-                especialidade: 'Barbeiro',
-                comissaoPorcentagem: parseFloat(form[4])
-            });
-            carregarAdminData('equipe');
-        }
-    }
-}
+       else if (tipo === 'barbeiros') {
+           const { value: form } = await Swal.fire({
+               title: 'Novo Profissional',
+               // 👇 Adicionei o Checkbox "Atende Clientes?" no HTML
+               html: `
+                   <input id="swal-nome" class="swal2-input" placeholder="Nome">
+                   <input id="swal-email" class="swal2-input" placeholder="Email (Login)">
+                   <input id="swal-tel" class="swal2-input" placeholder="WhatsApp (Com DDD)">
+                   <input id="swal-pass" type="password" class="swal2-input" placeholder="Senha">
+
+                   <div style="margin-top:15px; display:flex; align-items:center; justify-content:center; gap:10px;">
+                       <input type="checkbox" id="swal-atende" checked style="transform: scale(1.5);">
+                       <label for="swal-atende" style="font-size:16px; cursor:pointer;">Realiza Atendimentos?</label>
+                   </div>
+                   <small style="color:#666;">Desmarque se for apenas Recepcionista/Gerente</small>
+
+                   <label style="margin-top:15px; display:block; font-size:12px;">Comissão (%)</label>
+                   <input id="swal-com" type="number" class="swal2-input" value="50">
+               `,
+               focusConfirm: false,
+               showCancelButton: true,
+               confirmButtonText: 'Cadastrar',
+               didOpen: () => {
+                   const el = document.getElementById('swal-tel');
+                   if(typeof IMask !== 'undefined') IMask(el, {mask: '(00) 00000-0000'});
+               },
+               preConfirm: () => [
+                   document.getElementById('swal-nome').value,
+                   document.getElementById('swal-email').value,
+                   document.getElementById('swal-tel').value.replace(/\D/g, ''),
+                   document.getElementById('swal-pass').value,
+                   document.getElementById('swal-com').value,
+                   document.getElementById('swal-atende').checked // 👈 PEGA O VALOR DO CHECKBOX (true/false)
+               ]
+           });
+
+           if (form && form[0] && form[1]) {
+               try {
+                   // Envia para o Backend
+                   await apiFetch('/barbeiros', 'POST', {
+                       nome: form[0],
+                       email: form[1],
+                       telefone: form[2],
+                       senha: form[3],
+                       especialidade: 'Barbeiro', // Você pode criar um select para isso depois se quiser
+                       comissaoPorcentagem: parseFloat(form[4]),
+                       vaiCortarCabelo: form[5] // 👇 ENVIA O NOVO CAMPO
+                   });
+
+                   Swal.fire('Sucesso', 'Profissional cadastrado!', 'success');
+                   carregarAdminData('equipe');
+
+               } catch (erro) {
+                   // Tratamento especial para o erro do PLANO SOLO
+                   if (erro.message && erro.message.includes("plano é SOLO")) {
+                       Swal.fire({
+                           icon: 'warning',
+                           title: 'Limite do Plano',
+                           text: erro.message,
+                           footer: '<a href="#">Fazer Upgrade para Multi</a>'
+                       });
+                   } else {
+                       Swal.fire('Erro', erro.message, 'error');
+                   }
+               }
+           }
+       }
 
 async function deletarItem(tipo, id) {
     if ((await Swal.fire({ title: 'Tem certeza?', text: "Irreversível.", icon: 'warning', showCancelButton: true })).isConfirmed) {
